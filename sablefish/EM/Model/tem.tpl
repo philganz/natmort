@@ -48,9 +48,9 @@ DATA_SECTION
   //EOF Marker
   init_int eof;
 
-// Read parameter phases
-  !! ad_comm::change_datafile_name("tem.ctl");
 
+  !! ad_comm::change_datafile_name("tem.ctl");
+// Read parameter phases
   init_int    ph_logR
   init_int    ph_Rdevs
   init_int    ph_Idevs
@@ -65,6 +65,8 @@ DATA_SECTION
   init_int    ph_phi
   init_int    ph_Mdevs
   init_int    ph_sig
+// Read in natural mortality estimation case
+  init_int    M_case
 
 // Initialize some counting variables
   int i
@@ -119,10 +121,10 @@ PARAMETER_SECTION
 // Natural mortality
   init_bounded_number             log_M_0(-5,0,ph_M);
   number                          M_0;
-  //init_number             log_M_1(ph_M);        // For random walk scenarios (log_M_1 = log(M(1))) 
-  //init_bounded_number     log_phi(-10000,0,ph_phi);
-  //number                  phi;
-  //init_number             alpha(ph_a);
+  init_number             log_M_1(ph_M);        // For random walk scenarios (log_M_1 = log(M(1))) 
+  init_bounded_number     log_phi(-10000,0,ph_phi);
+  number                  phi;
+  init_number             alpha(ph_a);
   init_number             Beta(ph_B);
   
 // Survey catchability
@@ -220,7 +222,9 @@ FUNCTION Get_Selectivity
 //===================================================================================================
 FUNCTION Get_Mortality_Rates
 //===================================================================================================
-  
+  //cout<<"M_case = "<<M_case<<endl;
+  //exit(77);
+
   M_0 = mfexp(log_M_0);
   sigma_M = mfexp(log_sigma_M);
   //phi     = mfexp(log_phi);
@@ -228,24 +232,28 @@ FUNCTION Get_Mortality_Rates
   // Covariate case
   // Turn beta phase off for estimation without covariate
   // Turn beta and log_M_0 phase off to fix natural mortality
+  if(M_case==1){
   for (i=1;i<=nyrs;i++){
-   M(i) = M_0+Beta*obs_m_cov(i);}
+  M(i) = M_0+Beta*obs_m_cov(i);}}
 
   // Uncorrelated deviations
-  //for (i=1;i<=nyrs;i++){
-  // M(i) = M_0+sigma_M*M_devs(i);}
+  if(M_case==2){
+  for (i=1;i<=nyrs;i++){
+  M(i) = M_0+sigma_M*M_devs(i);}}
 
   // Random walk 
-  //M(1)=mfexp(log_M_1);
-  //for (i=2;i<=nyrs;i++){
-  //M(i) = M(i-1)+alpha+sigma_M*M_devs(i);}
-  //M_0 =mean(M);
+  if(M_case==3){
+  M(1)=mfexp(log_M_1);
+  for (i=2;i<=nyrs;i++){
+  M(i) = M(i-1)+alpha+sigma_M*M_devs(i);}
+  M_0 =mean(M);}
  
   // Correlated walk
-  //M(1)=mfexp(log_M_1);
-  //for (i=2;i<=nyrs;i++){
-  //M(i) = phi*M(i-1)+alpha+sigma_M*M_devs(i);}
-  //M_0 =mean(M);
+  if(M_case==4){  
+  M(1)=mfexp(log_M_1);
+  for (i=2;i<=nyrs;i++){
+  M(i) = phi*M(i-1)+alpha+sigma_M*M_devs(i);}
+  M_0 =mean(M);}
 
   Fmort = mfexp(log_avg_F + F_devs);
   for (i=1;i<=nyrs;i++){
