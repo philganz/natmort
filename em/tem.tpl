@@ -119,8 +119,8 @@ PARAMETER_SECTION
   init_bounded_dev_vector   F_devs(1,nyrs,-15,15,ph_Fdevs);
 
 // Natural mortality
-  init_bounded_number             log_M_0(-5,0,ph_M);
-  number                          M_0;
+  init_bounded_number             M_0(0,0.9,ph_M);
+  //number                          M_0;
   init_number             log_M_1(ph_M);        // For random walk scenarios (log_M_1 = log(M(1))) 
   init_bounded_number     log_phi(-10000,0,ph_phi);
   number                  phi;
@@ -222,13 +222,13 @@ FUNCTION Get_Selectivity
 //===================================================================================================
 FUNCTION Get_Mortality_Rates
 //===================================================================================================
-  //cout<<"M_case = "<<M_case<<endl;
-  //exit(77);
 
-  M_0 = mfexp(log_M_0);
-  sigma_M = mfexp(log_sigma_M);
+// Transformations
+  //M_0 = mfexp(log_M_0);
+  //sigma_M = mfexp(log_sigma_M);
   //phi     = mfexp(log_phi);
-  
+ 
+// Natural mortality  
   // Covariate case
   // Turn beta phase off for estimation without covariate
   // Turn beta and log_M_0 phase off to fix natural mortality
@@ -255,19 +255,21 @@ FUNCTION Get_Mortality_Rates
   M(i) = phi*M(i-1)+alpha+sigma_M*M_devs(i);}
   M_0 =mean(M);}
 
+// Fishing mortality
   Fmort = mfexp(log_avg_F + F_devs);
   for (i=1;i<=nyrs;i++){
    F(i) = Fmort(i)*fish_sel;}  
-  
+
+// Total mortality  
   for (i=1;i<=nyrs;i++){
   for (j=1;j<=nages;j++){
    Z(i,j) = F(i,j) + M(i);}}
-  
+
+// Survival  
   for (i=1;i<=nyrs;i++){
   for (j=1;j<=nages;j++){
   S(i,j) = mfexp(-1.0*Z(i,j));}}
   
-
 //===================================================================================================
 FUNCTION Get_Numbers_At_Age  
 //===================================================================================================
