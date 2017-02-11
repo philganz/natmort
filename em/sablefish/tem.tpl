@@ -83,27 +83,6 @@ DATA_SECTION
  END_CALCS
 
 //===================================================================================================
-INITIALIZATION_SECTION
-//===================================================================================================
-logR  0.4
-
-log_avg_F  -2
-log_M_0 -2.302585
-//log_M_1 -2
-//log_phi -0.7
-
-log_q_srv  2 
-  
-a50_srv  3 
-delta_srv  2 
-
-a50_fish  4 
-delta_fish  2 
-
-log_sigma_M -4
-//rho 0.5
-
-//===================================================================================================
 PARAMETER_SECTION
 //===================================================================================================
 
@@ -119,8 +98,8 @@ PARAMETER_SECTION
   init_bounded_dev_vector   F_devs(1,nyrs,-15,15,ph_Fdevs);
 
 // Natural mortality
-  init_bounded_number             M_0(0,0.9,ph_M);
-  //number                          M_0;
+  init_bounded_number             log_M_0(-5,0,ph_M);
+  number                          M_0;
   init_number             log_M_1(ph_M);        // For random walk scenarios (log_M_1 = log(M(1))) 
   init_bounded_number     log_phi(-10000,0,ph_phi);
   number                  phi;
@@ -224,9 +203,9 @@ FUNCTION Get_Mortality_Rates
 //===================================================================================================
 
 // Transformations
-  //M_0 = mfexp(log_M_0);
-  //sigma_M = mfexp(log_sigma_M);
-  //phi     = mfexp(log_phi);
+  M_0 = mfexp(log_M_0);
+  sigma_M = mfexp(log_sigma_M);
+  phi     = mfexp(log_phi);
  
 // Natural mortality  
   // Covariate case

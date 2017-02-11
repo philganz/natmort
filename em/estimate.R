@@ -1,7 +1,3 @@
-#Paths for estimation model and results 
-pathM <- paste(substr(pathOM,1,nchar(pathOM)-3),"/EM/Model",sep="")
-pathR <- paste(substr(pathOM,1,nchar(pathOM)-3),"/EM/Results",sep="")
-
 #================================================================================================
 #===MCMC specifications
 #================================================================================================
@@ -17,12 +13,11 @@ cov_CV <- 0
 #================================================================================================
 #===Set up results
 #================================================================================================
-Iter_base         <- read.delim(paste(pathM,"/iteration_base.rep",sep=""),sep="")
+Iter_base         <- read.delim(paste(pathE,"/iteration_base.rep",sep=""),sep="")
 Results           <- array(NA,dim=c(R,length(Iter_base),m,length(cov_CV)))
 colnames(Results) <- names(Iter_base)
-STD               <- read.delim(paste(pathM,"/tem.STD",sep=""),sep="")
-Iter_mcmc         <- read.csv(paste(pathM,"/mcmc_results.csv",sep=""))
-mcmc_results      <- array(NA,dim=c(nrow(Iter_mcmc), ncol(Iter_mcmc),R,m,length(cov_CV)))
+STD               <- read.delim(paste(pathE,"/tem.STD",sep=""),sep="")
+mcmc_results      <- array(NA,dim=c(mcmc_N/mcmc_save, 2,R,m,length(cov_CV)))
 DIC               <- array(NA,dim=c(R,m,length(cov_CV)))
 
 #================================================================================================
@@ -38,11 +33,9 @@ M_devs     <- array(NA,dim=c(nyears,m))
 #================================================================================================
 #===Loop through M scenarios, covariate error, replicates
 #================================================================================================
-setwd(pathM)
+setwd(pathE)
 
-#Compile estimation model without random effects
-# shell("admb tem")
-#Compile estimation model with random effects
+#Compile estimation model
 shell("admb -r tem")
 
 T_start <- Sys.time()
@@ -64,52 +57,41 @@ M_devs[,k]  <- (M[,k] - exp(log_M_0))/exp(log_sigma_M)
 
 PIN<-c(
 "# logR:",
-#as.character(round(logR,1)),
 as.character(logR[r]),
 "# rec_devs:",
-#paste(as.vector(rep(0,30)), collapse=" "),
 paste(as.vector(rec_devs[,r]), collapse=" "),
 "# init_devs:",
-#paste(as.vector(rep(0,29)), collapse=" "),
 paste(as.vector(init_devs[,r]), collapse=" "),
 "# log_avg_F:",
-#as.character(round(log_avg_F[r])),
 as.character(log_avg_F[r]),
 "# F_devs:",
-#paste(as.vector(rep(0,30)), collapse=" "),
 paste(as.vector(F_devs[,r]), collapse=" "),
 "# log_M_0:",
-#as.character(round(log_M_0)),
 as.character(log_M_0),
+"# log_M_1:",
+paste(-2),
+"# log_phi:",
+paste(-5000),
+"# alpha:",
+paste(0),
 "# Beta:",
-as.character(round(Beta)),
-#as.character(Beta),
+as.character(Beta),
 "# log_q_srv:",
-#as.character(round(log_q_srv)),
 as.character(log_q_srv),
 "# a50_srv:",
-#as.character(round(a50_srv)),
 as.character(a50_srv),
 "# delta_srv:",
-#as.character(round(delta_srv)),
 as.character(delta_srv),
 "# a50_fish:",
-#as.character(round(a50_fish)),
 as.character(a50_fish),
 "# delta_fish:",
-#as.character(round(delta_fish))
-as.character(delta_fish)
-,
-#)
-# #Remove if not running random effects
+as.character(delta_fish),
 "# log_sigma_M:",
 as.character(log_sigma_M),
-#as.character(-3),
 "# M_devs:",
-#paste(as.vector(rep(0,30)), collapse=" "))
 paste(as.vector(M_devs[,k]), collapse=" "))
 
-#write.table(PIN,file=paste(pathM,"/tem.PIN",sep=""),quote=FALSE,row.names=FALSE,col.names=FALSE)
+#write.table(PIN,file=paste(pathE,"/tem.pin",sep=""),quote=FALSE,row.names=FALSE,col.names=FALSE)
 
 #================================================================================================
 #===Send simulation data to ADMB
@@ -219,20 +201,22 @@ oac_fish_sim,
 42,
 "#!")
 
-write.table(DATs,file=paste(pathM,"/tem.dat",sep=""),quote=FALSE,row.names=FALSE,col.names=FALSE)
+write.table(DATs,file=paste(pathE,"/tem.dat",sep=""),quote=FALSE,row.names=FALSE,col.names=FALSE)
 
+#Run Model without performing optimization (for calibration)
+# shell("tem -noest")
 #Run Model
 shell("tem")
 
 #Record iteration results
-Iter_base <- read.delim(paste(pathM,"/iteration_base.rep",sep=""),sep="")
-Results[r,,k,c] <- c(as.numeric(read.delim(paste(pathM,"/iteration_base.rep",sep=""),sep="")))
+Iter_base <- read.delim(paste(pathE,"/iteration_base.rep",sep=""),sep="")
+Results[r,,k,c] <- c(as.numeric(read.delim(paste(pathE,"/iteration_base.rep",sep=""),sep="")))
 
 #Test for ADMB convergence using .std 
-Results_base<-read.delim(paste(pathM,"/iteration_base.rep",sep=""),sep="")
-Results[r,,k,c] <- c(as.numeric(read.delim(paste(pathM,"/iteration_base.rep",sep=""),sep="")))
-if(length(scan(paste(pathM,"/tem.std",sep=""),what=character(0)))>0){
-  STDi<-read.delim(paste(pathM,"/tem.STD",sep=""),sep="")
+Results_base<-read.delim(paste(pathE,"/iteration_base.rep",sep=""),sep="")
+Results[r,,k,c] <- c(as.numeric(read.delim(paste(pathE,"/iteration_base.rep",sep=""),sep="")))
+if(length(scan(paste(pathE,"/tem.std",sep=""),what=character(0)))>0){
+  STDi<-read.delim(paste(pathE,"/tem.STD",sep=""),sep="")
   if(STD$value[length(STD$std)]!=STDi$value[length(STDi$std)]){
     Results[r,1,k,c]<-1
     STD<-STDi}
@@ -241,7 +225,7 @@ if(length(scan(paste(pathM,"/tem.std",sep=""),what=character(0)))>0){
 # MCMC
 # shell(paste("tem -mcmc ", mcmc_N, " -mcsave ", mcmc_save, sep=""))
 # shell("tem -mceval")
-# mcmc_results[,,r,k,c] <- as.matrix(read.csv(paste(pathM,"/mcmc_results.csv",sep="")))
+# mcmc_results[,,r,k,c] <- as.matrix(read.csv(paste(pathE,"/mcmc_results.csv",sep="")))
 
 # DIC
 D_bar <- mean(2 * mcmc_results[-c(1:burn_in),,r,k,c])
