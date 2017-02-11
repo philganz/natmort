@@ -99,7 +99,7 @@ as.character(log_sigma_M),
 "# M_devs:",
 paste(as.vector(M_devs[,k]), collapse=" "))
 
-#write.table(PIN,file=paste(pathE,"/tem.pin",sep=""),quote=FALSE,row.names=FALSE,col.names=FALSE)
+# write.table(PIN,file=paste(pathE,"/tem.pin",sep=""),quote=FALSE,row.names=FALSE,col.names=FALSE)
 
 #================================================================================================
 #===Send simulation data to ADMB
@@ -207,8 +207,6 @@ oac_fish_sim,
 
 write.table(DATs,file=paste(pathE,"/tem.dat",sep=""),quote=FALSE,row.names=FALSE,col.names=FALSE)
 
-#Run Model without performing optimization (for calibration)
-# shell("tem -noest")
 #Run Model
 shell("tem")
 

@@ -54,7 +54,8 @@ DATA_SECTION
   init_int    ph_logR
   init_int    ph_Rdevs
   init_int    ph_Idevs
-  init_int    ph_M
+  init_int    ph_M_0
+  init_int    ph_M_1
   init_int    ph_a  
   init_int    ph_B
   init_int    ph_avgF
@@ -98,9 +99,9 @@ PARAMETER_SECTION
   init_bounded_dev_vector   F_devs(1,nyrs,-15,15,ph_Fdevs);
 
 // Natural mortality
-  init_bounded_number             log_M_0(-5,0,ph_M);
+  init_bounded_number             log_M_0(-5,0,ph_M_0);
   number                          M_0;
-  init_number             log_M_1(ph_M);        // For random walk scenarios (log_M_1 = log(M(1))) 
+  init_number             log_M_1(ph_M_1);        // For random walk scenarios (log_M_1 = log(M(1))) 
   init_bounded_number     log_phi(-10000,0,ph_phi);
   number                  phi;
   init_number             alpha(ph_a);
@@ -205,7 +206,7 @@ FUNCTION Get_Mortality_Rates
 // Transformations
   M_0 = mfexp(log_M_0);
   sigma_M = mfexp(log_sigma_M);
-  phi     = mfexp(log_phi);
+  phi = mfexp(log_phi);
  
 // Natural mortality  
   // Covariate case
@@ -228,7 +229,7 @@ FUNCTION Get_Mortality_Rates
   M_0 =mean(M);}
  
   // Correlated walk
-  if(M_case==4){  
+  if(M_case==4){
   M(1)=mfexp(log_M_1);
   for (i=2;i<=nyrs;i++){
   M(i) = phi*M(i-1)+alpha+sigma_M*M_devs(i);}

@@ -5,8 +5,8 @@
 # set working directory to source file location #
 
 pathR <- getwd()
-pathOM <- paste(substr(pathR,1,nchar(pathR)-44),"om/sablefish",sep="")
-pathEM <- paste(substr(pathR,1,nchar(pathR)-44),"em/sablefish",sep="")
+pathOM <- paste(substr(pathR,1,nchar(pathR)-48),"om/sablefish",sep="")
+pathEM <- paste(substr(pathR,1,nchar(pathR)-48),"em/sablefish",sep="")
 
 #================================================================================================
 #=================Load simulated data
@@ -27,7 +27,7 @@ CTL <- c(
 paste(1, "# Log recruitment (ph_logR)", sep=" "),
 paste(1, "# Recruitment deviations phase (ph_Rdevs)", sep=" "),
 paste(1, "# Initial abundance deviations phase (ph_Idevs)", sep=" "),
-paste(-1, "# Mean mortality phase (ph_M_0)", sep=" "),
+paste(1, "# Mean mortality phase (ph_M_0)", sep=" "),
 paste(-1, "# Initial mortality phase (ph_M_1)", sep=" "),
 paste(-1, "# Drift term phase (ph_a)", sep=" "),
 paste(-1, "# Beta phase (ph_B)", sep=" "),
@@ -59,7 +59,7 @@ paste(-2),
 "# F_devs:",
 paste(as.vector(rep(0,nyears)), collapse=" "),
 "# log_M_0:",
-paste(-2.302585),
+paste(-2),
 "# log_M_1:",
 paste(-2),
 "# log_phi:",
