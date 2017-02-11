@@ -151,13 +151,15 @@ PARAMETER_SECTION
   sdreport_vector       spawn_biom(1,nyrs);
 
 // Random effects (and associated sigma)
-  init_bounded_number           log_sigma_M(-20,20,ph_sig);
+  init_bounded_number           log_sigma_M(-20,0,ph_sig);
   number                sigma_M;
 
 // Natural mortality as fixed effects vector
 //  init_vector   M_devs(1,nyrs,ph_Mdevs);
 
 // Natural mortality deviations as random effects
+  //random_effects_vector log_M_devs(1,nyrs,ph_Mdevs);
+  //vector M_devs(1,nyrs,ph_Mdevs);
   random_effects_vector M_devs(1,nyrs,ph_Mdevs);
 
 // Change vector length for walks and correlated scenarios
@@ -207,7 +209,8 @@ FUNCTION Get_Mortality_Rates
   M_0 = mfexp(log_M_0);
   sigma_M = mfexp(log_sigma_M);
   phi = mfexp(log_phi);
- 
+  //M_devs = mfexp(log_M_devs);
+
 // Natural mortality  
   // Covariate case
   // Turn beta phase off for estimation without covariate
@@ -220,20 +223,21 @@ FUNCTION Get_Mortality_Rates
   if(M_case==2){
   for (i=1;i<=nyrs;i++){
   M(i) = M_0+sigma_M*M_devs(i);}}
+  //M(i) = mfexp(log_M_0+log_sigma_M*M_devs(i));}}
 
   // Random walk 
-  if(M_case==3){
-  M(1)=mfexp(log_M_1);
-  for (i=2;i<=nyrs;i++){
-  M(i) = M(i-1)+alpha+sigma_M*M_devs(i);}
-  M_0 =mean(M);}
+//if(M_case==3){
+//M(1)=mfexp(log_M_1);
+//for (i=2;i<=nyrs;i++){
+//M(i) = M(i-1)+alpha+sigma_M*M_devs(i);}
+//M_0 =mean(M);}
  
   // Correlated walk
-  if(M_case==4){
-  M(1)=mfexp(log_M_1);
-  for (i=2;i<=nyrs;i++){
-  M(i) = phi*M(i-1)+alpha+sigma_M*M_devs(i);}
-  M_0 =mean(M);}
+//if(M_case==4){
+//M(1)=mfexp(log_M_1);
+//for (i=2;i<=nyrs;i++){
+//M(i) = phi*M(i-1)+alpha+sigma_M*M_devs(i);}
+//M_0 =mean(M);}
 
 // Fishing mortality
   Fmort = mfexp(log_avg_F + F_devs);

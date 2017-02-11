@@ -151,8 +151,7 @@ PARAMETER_SECTION
   sdreport_vector       spawn_biom(1,nyrs);
 
 // Random effects (and associated sigma)
-  init_bounded_number           log_sigma_M(-20,20,ph_sig);
-  number                sigma_M;
+  init_bounded_number           sigma_M(0,0.2,ph_sig);
 
 // Natural mortality as fixed effects vector
 //  init_vector   M_devs(1,nyrs,ph_Mdevs);
@@ -163,7 +162,6 @@ PARAMETER_SECTION
 // Change vector length for walks and correlated scenarios
 //  init_vector  M_devs(2,nyrs,ph_Mdevs);
 //  random_effects_vector  M_devs(2,nyrs,ph_Mdevs);
-
 
 // Likelihoods and penalty functions
   number         srv_like;
@@ -205,9 +203,8 @@ FUNCTION Get_Mortality_Rates
 
 // Transformations
   M_0 = mfexp(log_M_0);
-  sigma_M = mfexp(log_sigma_M);
   phi = mfexp(log_phi);
- 
+
 // Natural mortality  
   // Covariate case
   // Turn beta phase off for estimation without covariate
