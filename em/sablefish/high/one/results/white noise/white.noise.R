@@ -78,8 +78,8 @@ paste(2),
 paste(4),
 "# delta_fish:",
 paste(2),
-"# sigma_M:",
-paste(0.05),
+"# log_sigma_M:",
+paste(-3),
 "# M_devs:",
 paste(as.vector(rep(0,nyears)), collapse=" "))
 

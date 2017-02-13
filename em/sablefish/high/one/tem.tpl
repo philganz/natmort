@@ -151,7 +151,8 @@ PARAMETER_SECTION
   sdreport_vector       spawn_biom(1,nyrs);
 
 // Random effects (and associated sigma)
-  init_bounded_number           sigma_M(0,0.2,ph_sig);
+  init_bounded_number           log_sigma_M(-10,-1,ph_sig);
+  number                sigma_M;
 
 // Natural mortality as fixed effects vector
 //  init_vector   M_devs(1,nyrs,ph_Mdevs);
@@ -204,6 +205,7 @@ FUNCTION Get_Mortality_Rates
 // Transformations
   M_0 = mfexp(log_M_0);
   phi = mfexp(log_phi);
+  sigma_M = mfexp(log_sigma_M);
 
 // Natural mortality  
   // Covariate case
@@ -217,7 +219,8 @@ FUNCTION Get_Mortality_Rates
   if(M_case==2){
   for (i=1;i<=nyrs;i++){
   M(i) = M_0+sigma_M*M_devs(i);}}
-
+  //M(i) = mfexp(log_M_0+sigma_M*M_devs(i));}}
+  
   // Random walk 
   if(M_case==3){
   M(1)=mfexp(log_M_1);
