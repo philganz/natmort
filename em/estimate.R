@@ -36,6 +36,7 @@ rec_devs   <- array(NA,dim=c(nyears,R))
 init_devs  <- array(NA,dim=c(nages-1,R))
 log_avg_F  <- array(NA,dim=c(R))
 F_devs     <- array(NA,dim=c(nyears,R))
+alpha      <- array(NA, dim=m)
 M_devs     <- array(NA,dim=c(nyears,m))
 
 #================================================================================================
@@ -55,13 +56,14 @@ for (c in 1:1){
 #================================================================================================
 #=================Send true parameter values to .pin file (for calibration only)
 #================================================================================================
-
 logR[r]       <- mean(log(N[,1,r,]))
 rec_devs[,r]  <- log(N[,1,r,k])-logR[r]
 init_devs[,r] <- log(N[1,2:nages,r,k])
 log_avg_F[r]  <- mean(log(F_year[,r]))
 F_devs[,r]    <- log(F_year[,r]) - log_avg_F[r]
-M_devs[,k]  <- (M[,k] - exp(log_M_0))/exp(log_sigma_M)
+for(i in 2:nyears){alpha[k]      <- mean(M[i,k] - M[i-1,k])}
+if(M_case<=2){sigma_M <- exp(log_sigma_M); M_devs[,k] <- (M[,k] - M_0)/sigma_M
+} else{sigma_M <- 0; M_devs[,k] <- 0}
 
 PIN<-c(
 "# logR:",
@@ -78,10 +80,10 @@ paste(as.vector(F_devs[,r]), collapse=" "),
 as.character(log_M_0),
 "# log_M_1:",
 paste(-2),
-"# log_phi:",
-paste(-5000),
+"# phi:",
+paste(1),
 "# alpha:",
-paste(0),
+paste(alpha[k]),
 "# Beta:",
 as.character(Beta),
 "# log_q_srv:",
@@ -95,7 +97,7 @@ as.character(a50_fish),
 "# delta_fish:",
 as.character(delta_fish),
 "# log_sigma_M:",
-as.character(log_sigma_M),
+as.character(sigma_M),
 "# M_devs:",
 paste(as.vector(M_devs[,k]), collapse=" "))
 

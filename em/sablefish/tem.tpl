@@ -68,12 +68,16 @@ DATA_SECTION
   init_int    ph_sig
 // Read in natural mortality estimation case
   init_int    M_case
+// Read in start point for M_devs vector (1 for white noise, 2 for walks)
+  init_int    M_start
 
 // Initialize some counting variables
   int i
   int j
   int header
   !!header = 1;
+  int ms 
+  !!ms = M_start;
 
  LOCAL_CALCS
 
@@ -102,8 +106,7 @@ PARAMETER_SECTION
   init_bounded_number             log_M_0(-5,0,ph_M_0);
   number                          M_0;
   init_number             log_M_1(ph_M_1);        // For random walk scenarios (log_M_1 = log(M(1))) 
-  init_bounded_number     log_phi(-10000,0,ph_phi);
-  number                  phi;
+  init_bounded_number     phi(0,2,ph_phi);
   init_number             alpha(ph_a);
   init_number             Beta(ph_B);
   
@@ -154,14 +157,10 @@ PARAMETER_SECTION
   init_bounded_number           sigma_M(0,0.2,ph_sig);
 
 // Natural mortality as fixed effects vector
-//  init_vector   M_devs(1,nyrs,ph_Mdevs);
+  //init_vector   M_devs(ms,nyrs,ph_Mdevs);
 
 // Natural mortality deviations as random effects
-//  random_effects_vector M_devs(1,nyrs,ph_Mdevs);
-
-// Change vector length for walks and correlated scenarios
-  //init_vector  M_devs(2,nyrs,ph_Mdevs);
-  random_effects_vector  M_devs(2,nyrs,ph_Mdevs);
+  random_effects_vector M_devs(ms,nyrs,ph_Mdevs);
 
 // Likelihoods and penalty functions
   number         srv_like;
@@ -203,7 +202,6 @@ FUNCTION Get_Mortality_Rates
 
 // Transformations
   M_0 = mfexp(log_M_0);
-  phi = mfexp(log_phi);
 
 // Natural mortality  
   // Covariate case
@@ -218,20 +216,13 @@ FUNCTION Get_Mortality_Rates
   for (i=1;i<=nyrs;i++){
   M(i) = M_0+sigma_M*M_devs(i);}}
 
-  // Random walk 
+  // Random walk or correlated walk
   if(M_case==3){
-  M(1)=mfexp(log_M_1);
-  for (i=2;i<=nyrs;i++){
-  M(i) = M(i-1)+alpha+sigma_M*M_devs(i);}
-  M_0 =mean(M);}
- 
-  // Correlated walk
-  if(M_case==4){
   M(1)=mfexp(log_M_1);
   for (i=2;i<=nyrs;i++){
   M(i) = phi*M(i-1)+alpha+sigma_M*M_devs(i);}
   M_0 =mean(M);}
-
+ 
 // Fishing mortality
   Fmort = mfexp(log_avg_F + F_devs);
   for (i=1;i<=nyrs;i++){
@@ -316,8 +307,8 @@ FUNCTION Get_Age_Comp
 FUNCTION Evaluate_Objective_Function 
 //===================================================================================================
 
-//Objective funtion only for calibration 
-  //obj_fun += square(1-1);
+//For calibration only 
+  //exit(77);
 
 // Random effects prior ~N(0,1)
   obj_fun = 0.5*norm2(M_devs);
@@ -399,4 +390,4 @@ REPORT_SECTION
   report<<"natage"<<endl;
   report<<natage<<endl; 
   report<<"Z"<<endl;
-  report<<Z<<endl; 
+  report<<Z<<endl;
