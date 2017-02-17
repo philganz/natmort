@@ -12,8 +12,9 @@ this_dir <- function(directory)
 setwd(file.path(getwd(),directory))
 
 pathR <- getwd()
-pathOM <- paste(substr(pathR,1,nchar(pathR)-39),"om/sablefish",sep="")
-pathEM <- paste(substr(pathR,1,nchar(pathR)-39),"em/sablefish",sep="")
+path   <- substr(pathR,1,nchar(pathR)-39)
+pathOM <- paste(path,"/om/sablefish",sep="")
+pathEM <- paste(path,"/em/sablefish",sep="")
 
 #================================================================================================
 #=================Load simulated data
@@ -97,6 +98,7 @@ paste(as.vector(rep(0,nyears)), collapse=" "))
 write.table(PIN,file=paste(pathE,"/tem.pin",sep=""),quote=FALSE,row.names=FALSE,col.names=FALSE)
 
 #================================================================================================
-#=================Move master .tpl to estimation folder
+#=================Move master .tpl to estimation folder and run
 #================================================================================================
 file.copy(from=paste(pathEM,"/tem.tpl",sep=""), to=paste(pathE,"/tem.tpl",sep=""), overwrite = TRUE)
+source(paste(path,"/em/estimate.R",sep=""))
