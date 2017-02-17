@@ -12,6 +12,6 @@
 1 # Fishery Selectivity phase (ph_Fsel)
 -1 # Correlation term phase (ph_phi)
 2 # Mortality deviations phase (ph_Mdevs)
--2 # Random effects sigma phase (ph_sig)
+2 # Random effects sigma phase (ph_sig)
 2 # Natural mortality estimation case (M_case)
 1 # Start year for M_devs (M_start)

@@ -2,7 +2,11 @@
 #=================Get working directories
 #================================================================================================
 
-# set working directory to source file location #
+# set working directory to source file location
+## Rstudio:
+# setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+## R:
+setwd(dirname(sys.frame(1)$ofile))
 
 pathR <- getwd()
 pathOM <- paste(substr(pathR,1,nchar(pathR)-48),"om/sablefish",sep="")
