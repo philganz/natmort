@@ -43,7 +43,7 @@ paste(1, "# Correlation term phase (ph_phi)", sep=" "),
 paste(2, "# Mortality deviations phase (ph_Mdevs)", sep=" "),
 paste(2, "# Random effects sigma phase (ph_sig)", sep=" "),
 paste(M_case, "# Natural mortality estimation case (M_case)", sep=" "),
-paste(M_start, "# Natural mortality estimation case (M_case)", sep=" "))
+paste(M_start, "# Start year for M_devs (M_start)", sep=" "))
 
 write.table(CTL,file=paste(pathE,"/tem.ctl",sep=""),quote=FALSE,row.names=FALSE,col.names=FALSE)
 

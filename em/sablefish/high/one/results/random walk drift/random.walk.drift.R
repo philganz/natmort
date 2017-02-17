@@ -23,6 +23,9 @@ if(grepl("high/one",pathR)){load(paste(pathOM,"/high_1.RData",sep="")); pathE <-
 #================================================================================================
 #=================Write .ctl file
 #================================================================================================
+M_case  <- 3
+M_start <- 2
+
 CTL <- c(
 paste(1, "# Log recruitment (ph_logR)", sep=" "),
 paste(1, "# Recruitment deviations phase (ph_Rdevs)", sep=" "),
@@ -39,7 +42,8 @@ paste(1, "# Fishery Selectivity phase (ph_Fsel)",sep=" "),
 paste(-1, "# Correlation term phase (ph_phi)", sep=" "),
 paste(2, "# Mortality deviations phase (ph_Mdevs)", sep=" "),
 paste(2, "# Random effects sigma phase (ph_sig)", sep=" "),
-paste(3, "# Natural mortality estimation case (M_case)", sep=" "))
+paste(M_case, "# Natural mortality estimation case (M_case)", sep=" "),
+paste(M_start, "# Start year for M_devs (M_start)", sep=" "))
 
 write.table(CTL,file=paste(pathE,"/tem.ctl",sep=""),quote=FALSE,row.names=FALSE,col.names=FALSE)
 
