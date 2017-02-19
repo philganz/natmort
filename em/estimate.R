@@ -24,7 +24,7 @@ wt <- c(paste(as.vector(wt_F),collapse=" "),
 Iter_base         <- read.delim(paste(pathE,"/iteration_base.rep",sep=""),sep="")
 Results           <- array(NA,dim=c(R,length(Iter_base),m,length(cov_CV)))
 colnames(Results) <- names(Iter_base)
-STD               <- read.delim(paste(pathE,"/tem.STD",sep=""),sep="")
+STD               <- read.delim(paste(pathE,"/tem.std",sep=""),sep="")
 mcmc_results      <- array(NA,dim=c(mcmc_N/mcmc_save, 2,R,m,length(cov_CV)))
 DIC               <- array(NA,dim=c(R,m,length(cov_CV)))
 
@@ -45,7 +45,10 @@ M_devs     <- array(NA,dim=c(nyears,m))
 setwd(pathE)
 
 #Compile estimation model
-shell("admb -r tem")
+##Windows
+# shell("admb -r tem")
+##Linux
+system("admb -r tem")
 
 T_start <- Sys.time()
 	
@@ -210,7 +213,10 @@ oac_fish_sim,
 write.table(DATs,file=paste(pathE,"/tem.dat",sep=""),quote=FALSE,row.names=FALSE,col.names=FALSE)
 
 #Run Model
-shell("tem")
+##Windows
+# shell("tem")
+##Linux
+system("./tem")
 
 #Record iteration results
 Iter_base <- read.delim(paste(pathE,"/iteration_base.rep",sep=""),sep="")
@@ -220,7 +226,7 @@ Results[r,,k,c] <- c(as.numeric(read.delim(paste(pathE,"/iteration_base.rep",sep
 Results_base<-read.delim(paste(pathE,"/iteration_base.rep",sep=""),sep="")
 Results[r,,k,c] <- c(as.numeric(read.delim(paste(pathE,"/iteration_base.rep",sep=""),sep="")))
 if(length(scan(paste(pathE,"/tem.std",sep=""),what=character(0)))>0){
-  STDi<-read.delim(paste(pathE,"/tem.STD",sep=""),sep="")
+  STDi<-read.delim(paste(pathE,"/tem.std",sep=""),sep="")
   if(STD$value[length(STD$std)]!=STDi$value[length(STDi$std)]){
     Results[r,1,k,c]<-1
     STD<-STDi}
