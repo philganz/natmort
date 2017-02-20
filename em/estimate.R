@@ -1,14 +1,14 @@
 #================================================================================================
 #===MCMC specifications
 #================================================================================================
-mcmc_N    <- 12000
-mcmc_save <- 10
-burn_in   <- 200
+mcmc_N    <- 500000
+mcmc_save <- 500
+burn_in   <- 100
 
 #================================================================================================
 #===For estimation methods that don't use the covariate
 #================================================================================================
-if(grepl("covariate",pathR)==0){cov_CV <- 0}
+cov_CV <- 0
 
 #================================================================================================
 #===Combine weights for sablefish
@@ -24,8 +24,8 @@ wt <- c(paste(as.vector(wt_F),collapse=" "),
 Iter_base         <- read.delim(paste(pathE,"/iteration_base.rep",sep=""),sep="")
 Results           <- array(NA,dim=c(R,length(Iter_base),m,length(cov_CV)))
 colnames(Results) <- names(Iter_base)
-STD               <- read.delim(paste(pathE,"/tem.std",sep=""),sep="")
-mcmc_results      <- array(NA,dim=c(mcmc_N/mcmc_save, 2,R,m,length(cov_CV)))
+STD               <- read.delim(paste(pathE,"/tem.STD",sep=""),sep="")
+mcmc_results      <- array(NA,dim=c(mcmc_N/mcmc_save,3,R,m,length(cov_CV)))
 DIC               <- array(NA,dim=c(R,m,length(cov_CV)))
 
 #================================================================================================
@@ -45,14 +45,11 @@ M_devs     <- array(NA,dim=c(nyears,m))
 setwd(pathE)
 
 #Compile estimation model
-##Windows
-# shell("admb -r tem")
-##Linux
-system("admb -r tem")
+shell("admb -r tem")
 
 T_start <- Sys.time()
 	
-for (r in 1:1){
+for (r in 2:2){
 for (k in 1:1){
 for (c in 1:1){
 
@@ -213,10 +210,7 @@ oac_fish_sim,
 write.table(DATs,file=paste(pathE,"/tem.dat",sep=""),quote=FALSE,row.names=FALSE,col.names=FALSE)
 
 #Run Model
-##Windows
 # shell("tem")
-##Linux
-system("./tem")
 
 #Record iteration results
 Iter_base <- read.delim(paste(pathE,"/iteration_base.rep",sep=""),sep="")
@@ -226,16 +220,16 @@ Results[r,,k,c] <- c(as.numeric(read.delim(paste(pathE,"/iteration_base.rep",sep
 Results_base<-read.delim(paste(pathE,"/iteration_base.rep",sep=""),sep="")
 Results[r,,k,c] <- c(as.numeric(read.delim(paste(pathE,"/iteration_base.rep",sep=""),sep="")))
 if(length(scan(paste(pathE,"/tem.std",sep=""),what=character(0)))>0){
-  STDi<-read.delim(paste(pathE,"/tem.std",sep=""),sep="")
+  STDi<-read.delim(paste(pathE,"/tem.STD",sep=""),sep="")
   if(STD$value[length(STD$std)]!=STDi$value[length(STDi$std)]){
     Results[r,1,k,c]<-1
     STD<-STDi}
   else{Results[r,1,k,c]<-0}}else{STD<-STDi;Results[r,1,k,c]<-0}
 
 # MCMC
-# shell(paste("tem -mcmc ", mcmc_N, " -mcsave ", mcmc_save, sep=""))
-# shell("tem -mceval")
-# mcmc_results[,,r,k,c] <- as.matrix(read.csv(paste(pathE,"/mcmc_results.csv",sep="")))
+shell(paste("tem -mcmc ", mcmc_N, " -mcsave ", mcmc_save, sep=""))
+shell("tem -mceval")
+mcmc_results[,,r,k,c] <- as.matrix(read.csv(paste(pathE,"/mcmc_results.csv",sep="")))
 
 # DIC
 D_bar <- mean(2 * mcmc_results[-c(1:burn_in),,r,k,c])

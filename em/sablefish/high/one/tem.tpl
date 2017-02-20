@@ -157,7 +157,7 @@ PARAMETER_SECTION
   init_bounded_number           sigma_M(0,0.2,ph_sig);
 
 // Natural mortality as fixed effects vector
-  random_effects_vector   M_devs(ms,nyrs,ph_Mdevs);
+  init_vector   M_devs(ms,nyrs,ph_Mdevs);
 
 // Natural mortality deviations as random effects
   //random_effects_vector M_devs(ms,nyrs,ph_Mdevs);
@@ -351,9 +351,9 @@ FUNCTION write_base_results
 FUNCTION write_mcmc_results
 //===================================================================================================
   if(header==1){
-   mcmc_results << "M_0,obj_fun" << endl;
+   mcmc_results << "M_0,sigma_M,obj_fun" << endl;
    header=0;}
-   mcmc_results << M_0 << "," << obj_fun << endl;
+   mcmc_results << M_0 << "," << sigma_M << "," << obj_fun << endl;
 
 //===================================================================================================
 REPORT_SECTION
