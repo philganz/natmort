@@ -12,9 +12,9 @@ this_dir <- function(directory)
 setwd(file.path(getwd(),directory))
 
 pathR  <- getwd()
-path   <- substr(pathR,1,nchar(pathR)-41)
-pathOM <- paste(path,"/om/sablefish",sep="")
-pathEM <- paste(path,"/em/sablefish",sep="")
+path   <- substr(pathR,1,nchar(pathR)-43)
+pathOM <- paste(path,"/om/pollock",sep="")
+pathEM <- paste(path,"/em/pollock",sep="")
 
 #================================================================================================
 #=================Load simulated data
@@ -31,14 +31,14 @@ if(grepl("high/one",pathR)){load(paste(pathOM,"/high_1.RData",sep="")); pathE <-
 #================================================================================================
 #=================Write .ctl file
 #================================================================================================
-M_case  <- 2
+M_case  <- 1
 M_start <- 1
 
 CTL <- c(
 paste(1, "# Log recruitment (ph_logR)", sep=" "),
 paste(1, "# Recruitment deviations phase (ph_Rdevs)", sep=" "),
 paste(1, "# Initial abundance deviations phase (ph_Idevs)", sep=" "),
-paste(1, "# Mean mortality phase (ph_M_0)", sep=" "),
+paste(-1, "# Mean mortality phase (ph_M_0)", sep=" "),
 paste(-1, "# Initial mortality phase (ph_M_1)", sep=" "),
 paste(-1, "# Drift term phase (ph_a)", sep=" "),
 paste(-1, "# Beta phase (ph_B)", sep=" "),
@@ -48,8 +48,8 @@ paste(1, "# Catchability phase (ph_q)", sep=" "),
 paste(1, "# Survey Selectivity phase (ph_Ssel)", sep=" "),
 paste(1, "# Fishery Selectivity phase (ph_Fsel)",sep=" "),
 paste(-1, "# Correlation term phase (ph_phi)", sep=" "),
-paste(2, "# Mortality deviations phase (ph_Mdevs)", sep=" "),
-paste(2, "# Random effects sigma phase (ph_sig)", sep=" "),
+paste(-2, "# Mortality deviations phase (ph_Mdevs)", sep=" "),
+paste(-2, "# Random effects sigma phase (ph_sig)", sep=" "),
 paste(M_case, "# Natural mortality estimation case (M_case)", sep=" "),
 paste(M_start, "# Start year for M_devs (M_start)", sep=" "))
 
@@ -61,7 +61,7 @@ write.table(CTL,file=paste(pathE,"/tem.ctl",sep=""),quote=FALSE,row.names=FALSE,
 
 PIN<-c(
 "# logR:",
-paste(0.4),
+paste(10),
 "# rec_devs:",
 paste(as.vector(rep(0,nyears)), collapse=" "),
 "# init_devs:",
@@ -71,27 +71,27 @@ paste(-2),
 "# F_devs:",
 paste(as.vector(rep(0,nyears)), collapse=" "),
 "# log_M_0:",
-paste(-2),
+paste(-1.203973),
 "# log_M_1:",
-paste(-2),
-"# log_phi:",
-paste(-5000),
+paste(-1),
+"# phi:",
+paste(1),
 "# alpha:",
 paste(0),
 "# Beta:",
 paste(0),
 "# log_q_srv:",
-paste(2),
+paste(0),
 "# a50_srv:",
-paste(3),
+paste(5),
 "# delta_srv:",
-paste(2),
+paste(1),
 "# a50_fish:",
-paste(4),
+paste(5),
 "# delta_fish:",
-paste(2),
-"# sigma_M:",
-paste(0.05),
+paste(1),
+"# log_sigma_M:",
+paste(-6),
 "# M_devs:",
 paste(as.vector(rep(0,nyears)), collapse=" "))
 

@@ -308,7 +308,7 @@ FUNCTION Evaluate_Objective_Function
 //===================================================================================================
 
 //For calibration only 
-  //exit(77);
+  //obj_fun = 0;
 
 // Random effects prior ~N(0,1)
   obj_fun = 0.5*norm2(M_devs);
