@@ -90,20 +90,19 @@ PARAMETER_SECTION
 
 // Recruitment/initial abundance parameters
   init_bounded_number       logR(5,15,ph_logR);
-  init_bounded_dev_vector   rec_devs(1,nyrs,-15,15,ph_Rdevs);
-  init_bounded_vector       init_devs(2,nages,-15,15,ph_Idevs);
+  init_bounded_dev_vector   rec_devs(1,nyrs,-5,5,ph_Rdevs);
+  init_bounded_vector       init_devs(2,nages,-20,20,ph_Idevs);
 
 // Fishing mortality
   init_number               log_avg_F(ph_avgF);
-  init_bounded_dev_vector   F_devs(1,nyrs,-15,15,ph_Fdevs);
+  init_bounded_dev_vector   F_devs(1,nyrs,-5,5,ph_Fdevs);
 
 // Natural mortality
   init_bounded_number             log_M_0(-5,0,ph_M_0);
   number                          M_0;
-  //init_number             log_M_1(ph_M_1);        // For random walk scenarios (log_M_1 = log(M(1))) 
-  //init_bounded_number     log_phi(-10000,0,ph_phi);
-  //number                  phi;
-  //init_number             alpha(ph_a);
+  init_number             log_M_1(ph_M_1);        // For random walk scenarios (log_M_1 = log(M(1))) 
+  init_bounded_number     phi(0,2,ph_phi);
+  init_number             alpha(ph_a);
   init_number             Beta(ph_B);
 
 // Survey catchability
@@ -150,8 +149,7 @@ PARAMETER_SECTION
   sdreport_vector       spawn_biom(1,nyrs);
 
 // Random effects (and associated sigma)
-  init_bounded_number           log_sigma_M(-20,-2,ph_sig);
-  number                sigma_M;
+  init_bounded_number           sigma_M(0,0.2,ph_sig);
 
 // Natural mortality deviations as fixed effects vector
 //  init_vector M_devs(1,nyrs,ph_Mdevs);
@@ -201,45 +199,44 @@ FUNCTION Get_Selectivity
 FUNCTION Get_Mortality_Rates
 //===================================================================================================
 
+// Transformations
   M_0 = mfexp(log_M_0);
-  sigma_M = mfexp(log_sigma_M);
-  //phi     = mfexp(log_phi);
 
+// Natural mortality  
   // Covariate case
   // Turn beta phase off for estimation without covariate
   // Turn beta and log_M_0 phase off to fix natural mortality
+  if(M_case==1){
   for (i=1;i<=nyrs;i++){
-   M(i) = M_0+Beta*obs_m_cov(i);}
+  M(i) = M_0+Beta*obs_m_cov(i);}}
 
   // Uncorrelated deviations
-  //for (i=1;i<=nyrs;i++){
-  // M(i) = M_0+sigma_M*M_devs(i);}
+  if(M_case==2){
+  for (i=1;i<=nyrs;i++){
+  M(i) = M_0+sigma_M*M_devs(i);}}
 
-  // Random walk 
-  //M(1)=mfexp(log_M_1);
-  //for (i=2;i<=nyrs;i++){
-  //M(i) = M(i-1)+alpha+sigma_M*M_devs(i);}
-  //M_0 =mean(M);
+  // Random walk or correlated walk
+  if(M_case==3){
+  M(1)=mfexp(log_M_1);
+  for (i=2;i<=nyrs;i++){
+  M(i) = phi*M(i-1)+alpha+sigma_M*M_devs(i);}
+  M_0 =mean(M);}
  
-  // Correlated walk
-  //M(1)=mfexp(log_M_1);
-  //for (i=2;i<=nyrs;i++){
-  //M(i) = phi*M(i-1)+alpha+sigma_M*M_devs(i);}
-  //M_0 =mean(M);
-
+// Fishing mortality
   Fmort = mfexp(log_avg_F + F_devs);
   for (i=1;i<=nyrs;i++){
    F(i) = Fmort(i)*fish_sel;}  
-  
+
+// Total mortality  
   for (i=1;i<=nyrs;i++){
   for (j=1;j<=nages;j++){
    Z(i,j) = F(i,j) + M(i);}}
-  
+
+// Survival  
   for (i=1;i<=nyrs;i++){
   for (j=1;j<=nages;j++){
   S(i,j) = mfexp(-1.0*Z(i,j));}}
-  
-  
+
 //===================================================================================================
 FUNCTION Get_Numbers_At_Age  
 //===================================================================================================
@@ -310,7 +307,7 @@ FUNCTION Evaluate_Objective_Function
 //===================================================================================================
 
 // Objective funtion only for calibration 
-  //obj_fun += square(1-1);
+  //obj_fun = 0;
 
 // Random effects prior ~N(0,1)
   obj_fun = 0.5*norm2(M_devs);
