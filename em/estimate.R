@@ -8,7 +8,7 @@ burn_in   <- 100
 #================================================================================================
 #===For estimation methods that don't use the covariate
 #================================================================================================
-cov_CV <- 0
+if(grepl("covariate",pathR)==0){cov_CV <- 0}
 
 #================================================================================================
 #===Combine weights for sablefish
@@ -85,8 +85,8 @@ paste(1),
 "# alpha:",
 paste(alpha[k]),
 "# Beta:",
-paste(0),
-# as.character(Beta),
+# paste(0),
+as.character(Beta),
 "# log_q_srv:",
 as.character(log_q_srv),
 "# a50_srv:",
