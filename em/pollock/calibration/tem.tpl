@@ -90,12 +90,12 @@ PARAMETER_SECTION
 
 // Recruitment/initial abundance parameters
   init_bounded_number       logR(5,15,ph_logR);
-  init_bounded_dev_vector   rec_devs(1,nyrs,-5,5,ph_Rdevs);
-  init_bounded_vector       init_devs(2,nages,-20,20,ph_Idevs);
+  init_bounded_dev_vector   rec_devs(1,nyrs,-15,15,ph_Rdevs);
+  init_bounded_vector       init_devs(2,nages,-15,15,ph_Idevs);
 
 // Fishing mortality
   init_number               log_avg_F(ph_avgF);
-  init_bounded_dev_vector   F_devs(1,nyrs,-5,5,ph_Fdevs);
+  init_bounded_dev_vector   F_devs(1,nyrs,-15,15,ph_Fdevs);
 
 // Natural mortality
   init_bounded_number             log_M_0(-5,0,ph_M_0);
@@ -162,6 +162,7 @@ PARAMETER_SECTION
 //  random_effects_vector  M_devs(2,nyrs,ph_Mdevs);
 
 // Likelihoods and penalty functions
+  number         M_pr;
   number         srv_like;
   number         catch_like;
   number         srv_age_like;
@@ -214,6 +215,7 @@ FUNCTION Get_Mortality_Rates
   if(M_case==2){
   for (i=1;i<=nyrs;i++){
   M(i) = M_0+sigma_M*M_devs(i);}}
+//  M_devs(i)=(M(i)-M_0)/sigma_M;}}
 
   // Random walk or correlated walk
   if(M_case==3){
@@ -307,10 +309,10 @@ FUNCTION Evaluate_Objective_Function
 //===================================================================================================
 
 // Objective funtion only for calibration 
-  //obj_fun = 0;
+//  obj_fun = 0;
 
 // Random effects prior ~N(0,1)
-  obj_fun = 0.5*norm2(M_devs);
+  M_pr = 0.5*norm2(M_devs);
 
 // Calculate likelihood for survey biomass
   srv_like =  1/(2*square(obs_srv_biom_CV))*sum(square(log(obs_srv_biom)-log(pred_srv)));
@@ -325,6 +327,7 @@ FUNCTION Evaluate_Objective_Function
   fish_age_like = -sum(elem_prod(nsamples_fish_age * (obs_ac_fish),log(eac_fish)));
 
 // Calculate total likelihood
+  obj_fun  += M_pr;
   obj_fun  += srv_age_like;
   obj_fun  += fish_age_like;
   obj_fun  += srv_like;
@@ -351,6 +354,18 @@ FUNCTION write_mcmc_results
 //===================================================================================================
 REPORT_SECTION
 //===================================================================================================
+  report<<"M_pr"<<endl;
+  report<<M_pr<<endl; 
+  report<<"srv_age_like"<<endl;
+  report<<srv_age_like<<endl; 
+  report<<"fish_age_like"<<endl;
+  report<<fish_age_like<<endl; 
+  report<<"srv_like"<<endl;
+  report<<srv_like<<endl; 
+  report<<"catch_like"<<endl;
+  report<<catch_like<<endl; 
+  report<<""<<endl;
+
   report<<"obj_fun"<<endl;
   report<<obj_fun<<endl; 
   report<<""<<endl;
