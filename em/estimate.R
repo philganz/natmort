@@ -1,8 +1,8 @@
 #================================================================================================
 #===MCMC specifications
 #================================================================================================
-mcmc_N    <- 500000
-mcmc_save <- 500
+mcmc_N    <- 12000 #500000
+mcmc_save <- 100 #500
 burn_in   <- 100
 
 #================================================================================================
@@ -49,7 +49,7 @@ system("admb -r tem")
 
 T_start <- Sys.time()
 	
-for (r in 3:3){
+for (r in 1:1){
 for (k in 1:1){
 for (c in 1:1){
 
@@ -79,7 +79,7 @@ paste(as.vector(F_devs[,r]), collapse=" "),
 "# log_M_0:",
 as.character(log_M_0),
 "# log_M_1:",
-paste(-2),
+paste(-1.8971200),
 "# phi:",
 paste(1),
 "# alpha:",
@@ -97,7 +97,7 @@ as.character(delta_srv),
 as.character(a50_fish),
 "# delta_fish:",
 as.character(delta_fish),
-"# log_sigma_M:",
+"# sigma_M:",
 as.character(sigma_M),
 "# M_devs:",
 paste(as.vector(M_devs[,k]), collapse=" "))

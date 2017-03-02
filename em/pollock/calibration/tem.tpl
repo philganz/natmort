@@ -73,6 +73,8 @@ DATA_SECTION
   int j
   int header
   !!header = 1;
+  int ms 
+  !!ms = M_start;
 
  LOCAL_CALCS
 
@@ -137,29 +139,25 @@ PARAMETER_SECTION
 
 // Predicted values
   matrix        n_srv(1,nyrs,1,nages);
-  sdreport_vector        pred_srv(1,nyrs);
+  vector        pred_srv(1,nyrs);
   matrix        eac_srv(1,nyrs,1,nages);
 
   matrix        catage(1,nyrs,1,nages);
-  sdreport_vector        pred_catch(1,nyrs);
+  vector        pred_catch(1,nyrs);
   matrix        eac_fish(1,nyrs,1,nages);
 
 // Standard deviation estimates
-  sdreport_vector       tot_biom(1,nyrs);
-  sdreport_vector       spawn_biom(1,nyrs);
+  vector       tot_biom(1,nyrs);
+  vector       spawn_biom(1,nyrs);
 
 // Random effects (and associated sigma)
-  init_bounded_number           sigma_M(0,0.2,ph_sig);
+  init_bounded_number           sigma_M(0.000001,1,ph_sig);
 
-// Natural mortality deviations as fixed effects vector
-//  init_vector M_devs(1,nyrs,ph_Mdevs);
+// Natural mortality as fixed effects vector
+//  init_vector   M_devs(ms,nyrs,ph_Mdevs);
 
 // Natural mortality deviations as random effects
-  random_effects_vector M_devs(1,nyrs,ph_Mdevs);
-
-// Change vector length for walks and correlated scenarios
-//  init_vector  M_devs(2,nyrs,ph_Mdevs);
-//  random_effects_vector  M_devs(2,nyrs,ph_Mdevs);
+  random_effects_vector M_devs(ms,nyrs,ph_Mdevs);
 
 // Likelihoods and penalty functions
   number         M_pr;
@@ -215,7 +213,6 @@ FUNCTION Get_Mortality_Rates
   if(M_case==2){
   for (i=1;i<=nyrs;i++){
   M(i) = M_0+sigma_M*M_devs(i);}}
-//  M_devs(i)=(M(i)-M_0)/sigma_M;}}
 
   // Random walk or correlated walk
   if(M_case==3){
@@ -309,16 +306,18 @@ FUNCTION Evaluate_Objective_Function
 //===================================================================================================
 
 // Objective funtion only for calibration 
-//  obj_fun = 0;
+  obj_fun = 0;
 
 // Random effects prior ~N(0,1)
   M_pr = 0.5*norm2(M_devs);
 
 // Calculate likelihood for survey biomass
   srv_like =  1/(2*square(obs_srv_biom_CV))*sum(square(log(obs_srv_biom)-log(pred_srv)));
-    
+//  srv_like =  1/(2*square(obs_srv_biom_CV))*sum(square(log(obs_srv_biom+0.00001)-log(pred_srv+0.00001)));
+        
 // Calculate likelihood for catch biomass
   catch_like = 1/(2*square(obs_fish_biom_CV))*sum(square(log(obs_fish_biom)-log(pred_catch)));
+//  catch_like = 1/(2*square(obs_fish_biom_CV))*sum(square(log(obs_fish_biom+0.00001)-log(pred_catch+0.00001)));
 
 // Calculate likelihood for survey age comp
   srv_age_like = -sum(elem_prod(nsamples_srv_age * (obs_ac_srv),log(eac_srv)));
@@ -339,16 +338,23 @@ FUNCTION write_base_results
 
   ofstream results("iteration_base.rep");
 
+  if(M_case<=2){
   results<<"Convergence TB_end SB_end mean_rec log_M_0 Beta sigma_M M_devs_1985 M_devs_1986  M_devs_1987  M_devs_1988  M_devs_1989  M_devs_1990  M_devs_1991  M_devs_1992  M_devs_1993  M_devs_1994  M_devs_1995  M_devs_1996  M_devs_1997  M_devs_1998  M_devs_1999  M_devs_2000  M_devs_2001  M_devs_2002  M_devs_2003  M_devs_2004  M_devs_2005  M_devs_2006  M_devs_2007  M_devs_2008  M_devs_2009  M_devs_2010  M_devs_2011  M_devs_2012  M_devs_2013  M_devs_2014 M_1985 M_1986  M_1987  M_1988  M_1989  M_1990  M_1991  M_1992  M_1993  M_1994  M_1995  M_1996  M_1997  M_1998  M_1999  M_2000  M_2001  M_2002  M_2003  M_2004  M_2005  M_2006  M_2007  M_2008  M_2009  M_2010  M_2011  M_2012  M_2013  M_2014 mean_F fish_sel_age_3 fish_sel_age_4 fish_sel_age_5 fish_sel_age_6 fish_sel_age_7 fish_sel_age_8 fish_sel_age_9 fish_sel_age_10 fish_sel_age_11 fish_sel_age_12 fish_sel_age_13 fish_sel_age_14 fish_sel_age_15 srv_sel_age_3 srv_sel_age_4 srv_sel_age_5 srv_sel_age_6 srv_sel_age_7 srv_sel_age_8 srv_sel_age_9 srv_sel_age_10 srv_sel_age_11 srv_sel_age_12 srv_sel_age_13 srv_sel_age_14 srv_sel_age_15 logR rec_devs_1985 rec_devs_1986 rec_devs_1987 rec_devs_1988 rec_devs_1989 rec_devs_1990 rec_devs_1991 rec_devs_1992 rec_devs_1993 rec_devs_1994 rec_devs_1995 rec_devs_1996 rec_devs_1997 rec_devs_1998 rec_devs_1999 rec_devs_2000 rec_devs_2001 rec_devs_2002 rec_devs_2003 rec_devs_2004 rec_devs_2005 rec_devs_2006 rec_devs_2007 rec_devs_2008 rec_devs_2009 rec_devs_2010 rec_devs_2011 rec_devs_2012 rec_devs_2013 rec_devs_2014 init_devs_4 init_devs_5 init_devs_6 init_devs_7 init_devs_8 init_devs_9 init_devs_10 init_devs_11 init_devs_12 init_devs_13 init_devs_14 init_devs_15 log_avg_F F_devs_1985 F_devs_1986 F_devs_1987 F_devs_1988 F_devs_1989 F_devs_1990 F_devs_1991 F_devs_1992 F_devs_1993 F_devs_1994 F_devs_1995 F_devs_1996 F_devs_1997 F_devs_1998 F_devs_1999 F_devs_2000 F_devs_2001 F_devs_2002 F_devs_2003 F_devs_2004 F_devs_2005 F_devs_2006 F_devs_2007 F_devs_2008 F_devs_2009 F_devs_2010 F_devs_2011 F_devs_2012 F_devs_2013 F_devs_2014 Fmort_1985 Fmort_1986 Fmort_1987 Fmort_1988 Fmort_1989 Fmort_1990 Fmort_1991 Fmort_1992 Fmort_1993 Fmort_1994 Fmort_1995 Fmort_1996 Fmort_1997 Fmort_1998 Fmort_1999 Fmort_2000 Fmort_2001 Fmort_2002 Fmort_2003 Fmort_2004 Fmort_2005 Fmort_2006 Fmort_2007 Fmort_2008 Fmort_2009 Fmort_2010 Fmort_2011 Fmort_2012 Fmort_2013 Fmort_2014 log_q_srv a50_srv  delta_srv  a50_fish delta_fish tot_biom_1985 tot_biom_1986 tot_biom_1987 tot_biom_1988 tot_biom_1989 tot_biom_1990 tot_biom_1991 tot_biom_1992 tot_biom_1993 tot_biom_1994 tot_biom_1995 tot_biom_1996 tot_biom_1997 tot_biom_1998 tot_biom_1999 tot_biom_2000 tot_biom_2001 tot_biom_2002 tot_biom_2003 tot_biom_2004 tot_biom_2005 tot_biom_2006 tot_biom_2007 tot_biom_2008 tot_biom_2009 tot_biom_2010 tot_biom_2011 tot_biom_2012 tot_biom_2013 tot_biom_2014 spawn_biom_1985 spawn_biom_1986 spawn_biom_1987 spawn_biom_1988 spawn_biom_1989 spawn_biom_1990 spawn_biom_1991 spawn_biom_1992 spawn_biom_1993 spawn_biom_1994 spawn_biom_1995 spawn_biom_1996 spawn_biom_1997 spawn_biom_1998 spawn_biom_1999 spawn_biom_2000 spawn_biom_2001 spawn_biom_2002 spawn_biom_2003 spawn_biom_2004 spawn_biom_2005 spawn_biom_2006 spawn_biom_2007 spawn_biom_2008 spawn_biom_2009 spawn_biom_2010 spawn_biom_2011 spawn_biom_2012 spawn_biom_2013 spawn_biom_2014 nyrs nages spawn_fract recage wt_mat_3  wt_mat_4  wt_mat_5  wt_mat_6  wt_mat_7  wt_mat_8  wt_mat_9  wt_mat_10 wt_mat_11 wt_mat_12 wt_mat_13 wt_mat_14 wt_mat_15 obs_srv_biom_CV obs_srv_biom_1985 obs_srv_biom_1986 obs_srv_biom_1987 obs_srv_biom_1988 obs_srv_biom_1989 obs_srv_biom_1990 obs_srv_biom_1991 obs_srv_biom_1992 obs_srv_biom_1993 obs_srv_biom_1994 obs_srv_biom_1995 obs_srv_biom_1996 obs_srv_biom_1997 obs_srv_biom_1998 obs_srv_biom_1999 obs_srv_biom_2000 obs_srv_biom_2001 obs_srv_biom_2002 obs_srv_biom_2003 obs_srv_biom_2004 obs_srv_biom_2005 obs_srv_biom_2006 obs_srv_biom_2007 obs_srv_biom_2008 obs_srv_biom_2009 obs_srv_biom_2010 obs_srv_biom_2011 obs_srv_biom_2012 obs_srv_biom_2013 obs_srv_biom_2014 pred_srv_1985 pred_srv_1986 pred_srv_1987 pred_srv_1988 pred_srv_1989 pred_srv_1990 pred_srv_1991 pred_srv_1992 pred_srv_1993 pred_srv_1994 pred_srv_1995 pred_srv_1996 pred_srv_1997 pred_srv_1998 pred_srv_1999 pred_srv_2000 pred_srv_2001 pred_srv_2002 pred_srv_2003 pred_srv_2004 pred_srv_2005 pred_srv_2006 pred_srv_2007 pred_srv_2008 pred_srv_2009 pred_srv_2010 pred_srv_2011 pred_srv_2012 pred_srv_2013 pred_srv_2014 obs_fish_biom_CV obs_fish_biom_1985 obs_fish_biom_1986  obs_fish_biom_1987  obs_fish_biom_1988  obs_fish_biom_1989  obs_fish_biom_1990  obs_fish_biom_1991  obs_fish_biom_1992  obs_fish_biom_1993  obs_fish_biom_1994  obs_fish_biom_1995  obs_fish_biom_1996  obs_fish_biom_1997  obs_fish_biom_1998  obs_fish_biom_1999  obs_fish_biom_2000  obs_fish_biom_2001  obs_fish_biom_2002  obs_fish_biom_2003  obs_fish_biom_2004  obs_fish_biom_2005  obs_fish_biom_2006  obs_fish_biom_2007  obs_fish_biom_2008  obs_fish_biom_2009  obs_fish_biom_2010  obs_fish_biom_2011  obs_fish_biom_2012  obs_fish_biom_2013  obs_fish_biom_2014 pred_catch_1985 pred_catch_1986 pred_catch_1987 pred_catch_1988 pred_catch_1989 pred_catch_1990 pred_catch_1991 pred_catch_1992 pred_catch_1993 pred_catch_1994 pred_catch_1995 pred_catch_1996 pred_catch_1997 pred_catch_1998 pred_catch_1999 pred_catch_2000 pred_catch_2001 pred_catch_2002 pred_catch_2003 pred_catch_2004 pred_catch_2005 pred_catch_2006 pred_catch_2007 pred_catch_2008 pred_catch_2009 pred_catch_2010 pred_catch_2011 pred_catch_2012 pred_catch_2013 pred_catch_2014 nsamples_srv_age nsamples_fish_age srv_like catch_like srv_age_like fish_age_like obj_fun maxgrad"<<endl;
   results<<42<<" "<<tot_biom(nyrs)<<" "<<spawn_biom(nyrs)<<" "<<exp(logR)<<" "<<log_M_0<<" "<<Beta<<" "<<sigma_M<<" "<<M_devs<<" "<<M<<" "<<exp(log_avg_F)<<" "<<fish_sel<<" "<<srv_sel<<" "<<logR<<" "<<rec_devs<<" "<<init_devs<<" "<<log_avg_F<<" "<<F_devs<<" "<<Fmort<<" "<<log_q_srv<<" "<<a50_srv<<" "<<delta_srv<<" "<<a50_fish<<" "<<delta_fish<<" "<<tot_biom<<" "<<spawn_biom<<" "<<nyrs<<" "<<nages<<" "<<spawn_fract<<" "<<recage<<" "<<wt_mat<<" "<<obs_srv_biom_CV<<" "<<obs_srv_biom<<" "<<pred_srv<<" "<<obs_fish_biom_CV<<" "<<obs_fish_biom<<" "<<pred_catch<<" "<<nsamples_srv_age<<" "<<nsamples_fish_age<<" "<<srv_like<<" "<<catch_like<<" "<<srv_age_like<<" "<<fish_age_like<<" "<<obj_fun<<" "<<objective_function_value::pobjfun->gmax<<" "<<endl;
+  }
+
+  if(M_case>2){
+  results<<"Convergence TB_end SB_end mean_rec log_M_0 Beta sigma_M M_devs_1986  M_devs_1987  M_devs_1988  M_devs_1989  M_devs_1990  M_devs_1991  M_devs_1992  M_devs_1993  M_devs_1994  M_devs_1995  M_devs_1996  M_devs_1997  M_devs_1998  M_devs_1999  M_devs_2000  M_devs_2001  M_devs_2002  M_devs_2003  M_devs_2004  M_devs_2005  M_devs_2006  M_devs_2007  M_devs_2008  M_devs_2009  M_devs_2010  M_devs_2011  M_devs_2012  M_devs_2013  M_devs_2014 M_1985 M_1986  M_1987  M_1988  M_1989  M_1990  M_1991  M_1992  M_1993  M_1994  M_1995  M_1996  M_1997  M_1998  M_1999  M_2000  M_2001  M_2002  M_2003  M_2004  M_2005  M_2006  M_2007  M_2008  M_2009  M_2010  M_2011  M_2012  M_2013  M_2014 mean_F fish_sel_age_3 fish_sel_age_4 fish_sel_age_5 fish_sel_age_6 fish_sel_age_7 fish_sel_age_8 fish_sel_age_9 fish_sel_age_10 fish_sel_age_11 fish_sel_age_12 fish_sel_age_13 fish_sel_age_14 fish_sel_age_15 srv_sel_age_3 srv_sel_age_4 srv_sel_age_5 srv_sel_age_6 srv_sel_age_7 srv_sel_age_8 srv_sel_age_9 srv_sel_age_10 srv_sel_age_11 srv_sel_age_12 srv_sel_age_13 srv_sel_age_14 srv_sel_age_15 logR rec_devs_1985 rec_devs_1986 rec_devs_1987 rec_devs_1988 rec_devs_1989 rec_devs_1990 rec_devs_1991 rec_devs_1992 rec_devs_1993 rec_devs_1994 rec_devs_1995 rec_devs_1996 rec_devs_1997 rec_devs_1998 rec_devs_1999 rec_devs_2000 rec_devs_2001 rec_devs_2002 rec_devs_2003 rec_devs_2004 rec_devs_2005 rec_devs_2006 rec_devs_2007 rec_devs_2008 rec_devs_2009 rec_devs_2010 rec_devs_2011 rec_devs_2012 rec_devs_2013 rec_devs_2014 init_devs_4 init_devs_5 init_devs_6 init_devs_7 init_devs_8 init_devs_9 init_devs_10 init_devs_11 init_devs_12 init_devs_13 init_devs_14 init_devs_15 log_avg_F F_devs_1985 F_devs_1986 F_devs_1987 F_devs_1988 F_devs_1989 F_devs_1990 F_devs_1991 F_devs_1992 F_devs_1993 F_devs_1994 F_devs_1995 F_devs_1996 F_devs_1997 F_devs_1998 F_devs_1999 F_devs_2000 F_devs_2001 F_devs_2002 F_devs_2003 F_devs_2004 F_devs_2005 F_devs_2006 F_devs_2007 F_devs_2008 F_devs_2009 F_devs_2010 F_devs_2011 F_devs_2012 F_devs_2013 F_devs_2014 Fmort_1985 Fmort_1986 Fmort_1987 Fmort_1988 Fmort_1989 Fmort_1990 Fmort_1991 Fmort_1992 Fmort_1993 Fmort_1994 Fmort_1995 Fmort_1996 Fmort_1997 Fmort_1998 Fmort_1999 Fmort_2000 Fmort_2001 Fmort_2002 Fmort_2003 Fmort_2004 Fmort_2005 Fmort_2006 Fmort_2007 Fmort_2008 Fmort_2009 Fmort_2010 Fmort_2011 Fmort_2012 Fmort_2013 Fmort_2014 log_q_srv a50_srv  delta_srv  a50_fish delta_fish tot_biom_1985 tot_biom_1986 tot_biom_1987 tot_biom_1988 tot_biom_1989 tot_biom_1990 tot_biom_1991 tot_biom_1992 tot_biom_1993 tot_biom_1994 tot_biom_1995 tot_biom_1996 tot_biom_1997 tot_biom_1998 tot_biom_1999 tot_biom_2000 tot_biom_2001 tot_biom_2002 tot_biom_2003 tot_biom_2004 tot_biom_2005 tot_biom_2006 tot_biom_2007 tot_biom_2008 tot_biom_2009 tot_biom_2010 tot_biom_2011 tot_biom_2012 tot_biom_2013 tot_biom_2014 spawn_biom_1985 spawn_biom_1986 spawn_biom_1987 spawn_biom_1988 spawn_biom_1989 spawn_biom_1990 spawn_biom_1991 spawn_biom_1992 spawn_biom_1993 spawn_biom_1994 spawn_biom_1995 spawn_biom_1996 spawn_biom_1997 spawn_biom_1998 spawn_biom_1999 spawn_biom_2000 spawn_biom_2001 spawn_biom_2002 spawn_biom_2003 spawn_biom_2004 spawn_biom_2005 spawn_biom_2006 spawn_biom_2007 spawn_biom_2008 spawn_biom_2009 spawn_biom_2010 spawn_biom_2011 spawn_biom_2012 spawn_biom_2013 spawn_biom_2014 nyrs nages spawn_fract recage wt_mat_3  wt_mat_4  wt_mat_5  wt_mat_6  wt_mat_7  wt_mat_8  wt_mat_9  wt_mat_10 wt_mat_11 wt_mat_12 wt_mat_13 wt_mat_14 wt_mat_15 obs_srv_biom_CV obs_srv_biom_1985 obs_srv_biom_1986 obs_srv_biom_1987 obs_srv_biom_1988 obs_srv_biom_1989 obs_srv_biom_1990 obs_srv_biom_1991 obs_srv_biom_1992 obs_srv_biom_1993 obs_srv_biom_1994 obs_srv_biom_1995 obs_srv_biom_1996 obs_srv_biom_1997 obs_srv_biom_1998 obs_srv_biom_1999 obs_srv_biom_2000 obs_srv_biom_2001 obs_srv_biom_2002 obs_srv_biom_2003 obs_srv_biom_2004 obs_srv_biom_2005 obs_srv_biom_2006 obs_srv_biom_2007 obs_srv_biom_2008 obs_srv_biom_2009 obs_srv_biom_2010 obs_srv_biom_2011 obs_srv_biom_2012 obs_srv_biom_2013 obs_srv_biom_2014 pred_srv_1985 pred_srv_1986 pred_srv_1987 pred_srv_1988 pred_srv_1989 pred_srv_1990 pred_srv_1991 pred_srv_1992 pred_srv_1993 pred_srv_1994 pred_srv_1995 pred_srv_1996 pred_srv_1997 pred_srv_1998 pred_srv_1999 pred_srv_2000 pred_srv_2001 pred_srv_2002 pred_srv_2003 pred_srv_2004 pred_srv_2005 pred_srv_2006 pred_srv_2007 pred_srv_2008 pred_srv_2009 pred_srv_2010 pred_srv_2011 pred_srv_2012 pred_srv_2013 pred_srv_2014 obs_fish_biom_CV obs_fish_biom_1985 obs_fish_biom_1986  obs_fish_biom_1987  obs_fish_biom_1988  obs_fish_biom_1989  obs_fish_biom_1990  obs_fish_biom_1991  obs_fish_biom_1992  obs_fish_biom_1993  obs_fish_biom_1994  obs_fish_biom_1995  obs_fish_biom_1996  obs_fish_biom_1997  obs_fish_biom_1998  obs_fish_biom_1999  obs_fish_biom_2000  obs_fish_biom_2001  obs_fish_biom_2002  obs_fish_biom_2003  obs_fish_biom_2004  obs_fish_biom_2005  obs_fish_biom_2006  obs_fish_biom_2007  obs_fish_biom_2008  obs_fish_biom_2009  obs_fish_biom_2010  obs_fish_biom_2011  obs_fish_biom_2012  obs_fish_biom_2013  obs_fish_biom_2014 pred_catch_1985 pred_catch_1986 pred_catch_1987 pred_catch_1988 pred_catch_1989 pred_catch_1990 pred_catch_1991 pred_catch_1992 pred_catch_1993 pred_catch_1994 pred_catch_1995 pred_catch_1996 pred_catch_1997 pred_catch_1998 pred_catch_1999 pred_catch_2000 pred_catch_2001 pred_catch_2002 pred_catch_2003 pred_catch_2004 pred_catch_2005 pred_catch_2006 pred_catch_2007 pred_catch_2008 pred_catch_2009 pred_catch_2010 pred_catch_2011 pred_catch_2012 pred_catch_2013 pred_catch_2014 nsamples_srv_age nsamples_fish_age srv_like catch_like srv_age_like fish_age_like obj_fun maxgrad"<<endl;
+  results<<42<<" "<<tot_biom(nyrs)<<" "<<spawn_biom(nyrs)<<" "<<exp(logR)<<" "<<log_M_0<<" "<<Beta<<" "<<sigma_M<<" "<<M_devs<<" "<<M<<" "<<exp(log_avg_F)<<" "<<fish_sel<<" "<<srv_sel<<" "<<logR<<" "<<rec_devs<<" "<<init_devs<<" "<<log_avg_F<<" "<<F_devs<<" "<<Fmort<<" "<<log_q_srv<<" "<<a50_srv<<" "<<delta_srv<<" "<<a50_fish<<" "<<delta_fish<<" "<<tot_biom<<" "<<spawn_biom<<" "<<nyrs<<" "<<nages<<" "<<spawn_fract<<" "<<recage<<" "<<wt_mat<<" "<<obs_srv_biom_CV<<" "<<obs_srv_biom<<" "<<pred_srv<<" "<<obs_fish_biom_CV<<" "<<obs_fish_biom<<" "<<pred_catch<<" "<<nsamples_srv_age<<" "<<nsamples_fish_age<<" "<<srv_like<<" "<<catch_like<<" "<<srv_age_like<<" "<<fish_age_like<<" "<<obj_fun<<" "<<objective_function_value::pobjfun->gmax<<" "<<endl;
+  }
 
 //===================================================================================================
 FUNCTION write_mcmc_results
 //===================================================================================================
   if(header==1){
-   mcmc_results << "M_0,sigma_M,obj_fun" << endl;
+   mcmc_results << "M_0,sigma_M,M_pr,obj_fun" << endl;
    header=0;}
-   mcmc_results << M_0 << "," << sigma_M << "," << obj_fun << endl;
+   mcmc_results << M_0 << "," << sigma_M << "," << M_pr << "," << obj_fun << endl;
 
 
 //===================================================================================================
