@@ -92,12 +92,12 @@ PARAMETER_SECTION
 
 // Recruitment/initial abundance parameters
   init_bounded_number       logR(5,15,ph_logR);
-  init_bounded_dev_vector   rec_devs(1,nyrs,-15,15,ph_Rdevs);
-  init_bounded_vector       init_devs(2,nages,-15,15,ph_Idevs);
+  init_bounded_dev_vector   rec_devs(1,nyrs,-5,5,ph_Rdevs);
+  init_bounded_vector       init_devs(2,nages,5,15,ph_Idevs);
 
 // Fishing mortality
   init_number               log_avg_F(ph_avgF);
-  init_bounded_dev_vector   F_devs(1,nyrs,-15,15,ph_Fdevs);
+  init_bounded_dev_vector   F_devs(1,nyrs,-5,5,ph_Fdevs);
 
 // Natural mortality
   init_bounded_number             log_M_0(-5,0,ph_M_0);
@@ -139,19 +139,19 @@ PARAMETER_SECTION
 
 // Predicted values
   matrix        n_srv(1,nyrs,1,nages);
-  vector        pred_srv(1,nyrs);
+  sdreport_vector        pred_srv(1,nyrs);
   matrix        eac_srv(1,nyrs,1,nages);
 
   matrix        catage(1,nyrs,1,nages);
-  vector        pred_catch(1,nyrs);
+  sdreport_vector        pred_catch(1,nyrs);
   matrix        eac_fish(1,nyrs,1,nages);
 
 // Standard deviation estimates
-  vector       tot_biom(1,nyrs);
-  vector       spawn_biom(1,nyrs);
+  sdreport_vector       tot_biom(1,nyrs);
+  sdreport_vector       spawn_biom(1,nyrs);
 
 // Random effects (and associated sigma)
-  init_bounded_number           sigma_M(0.000001,1,ph_sig);
+  init_number           sigma_M(ph_sig);
 
 // Natural mortality as fixed effects vector
 //  init_vector   M_devs(ms,nyrs,ph_Mdevs);
@@ -160,6 +160,7 @@ PARAMETER_SECTION
   random_effects_vector M_devs(ms,nyrs,ph_Mdevs);
 
 // Likelihoods and penalty functions
+  number         temp;
   number         M_pr;
   number         srv_like;
   number         catch_like;
@@ -404,3 +405,10 @@ REPORT_SECTION
   report<<natage<<endl; 
   report<<"Z"<<endl;
   report<<Z<<endl; 
+
+//TOP_OF_MAIN_SECTION
+//  gradient_structure::set_MAX_NVAR_OFFSET(1000);
+//  gradient_structure::set_NUM_DEPENDENT_VARIABLES(1000);
+//  gradient_structure::set_GRADSTACK_BUFFER_SIZE(1000000);
+//  gradient_structure::set_CMPDIF_BUFFER_SIZE(10000000);
+//  arrmblsize=390000;

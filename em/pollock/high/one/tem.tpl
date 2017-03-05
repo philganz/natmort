@@ -92,12 +92,12 @@ PARAMETER_SECTION
 
 // Recruitment/initial abundance parameters
   init_bounded_number       logR(5,15,ph_logR);
-  init_bounded_dev_vector   rec_devs(1,nyrs,-5,5,ph_Rdevs);
-  init_bounded_vector       init_devs(2,nages,5,15,ph_Idevs);
+  init_bounded_dev_vector   rec_devs(1,nyrs,-15,15,ph_Rdevs);
+  init_bounded_vector       init_devs(2,nages,5,20,ph_Idevs);
 
 // Fishing mortality
-  init_number               log_avg_F(ph_avgF);
-  init_bounded_dev_vector   F_devs(1,nyrs,-5,5,ph_Fdevs);
+  init_bounded_number               log_avg_F(-5,0,ph_avgF);
+  init_bounded_dev_vector   F_devs(1,nyrs,-15,15,ph_Fdevs);
 
 // Natural mortality
   init_bounded_number             log_M_0(-5,0,ph_M_0);
@@ -151,7 +151,7 @@ PARAMETER_SECTION
   sdreport_vector       spawn_biom(1,nyrs);
 
 // Random effects (and associated sigma)
-  init_number           sigma_M(ph_sig);
+  init_bounded_number           sigma_M(0.000001,0.1,ph_sig);
 
 // Natural mortality as fixed effects vector
 //  init_vector   M_devs(ms,nyrs,ph_Mdevs);
@@ -412,3 +412,6 @@ REPORT_SECTION
 //  gradient_structure::set_GRADSTACK_BUFFER_SIZE(1000000);
 //  gradient_structure::set_CMPDIF_BUFFER_SIZE(10000000);
 //  arrmblsize=390000;
+
+RUNTIME_SECTION
+  maximum_function_evaluations 1000, 1000, 1000, 5000
