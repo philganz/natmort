@@ -92,12 +92,12 @@ PARAMETER_SECTION
 
 // Recruitment/initial abundance parameters
   init_bounded_number       logR(5,15,ph_logR);
-  init_bounded_dev_vector   rec_devs(1,nyrs,-5,5,ph_Rdevs);
-  init_bounded_vector       init_devs(2,nages,5,15,ph_Idevs);
+  init_bounded_vector   rec_devs(1,nyrs,-15,15,ph_Rdevs);
+  init_bounded_vector       init_devs(2,nages,5,20,ph_Idevs);
 
 // Fishing mortality
   init_number               log_avg_F(ph_avgF);
-  init_bounded_dev_vector   F_devs(1,nyrs,-5,5,ph_Fdevs);
+  init_bounded_vector   F_devs(1,nyrs,-15,15,ph_Fdevs);
 
 // Natural mortality
   init_bounded_number             log_M_0(-5,0,ph_M_0);
@@ -322,9 +322,11 @@ FUNCTION Evaluate_Objective_Function
 
 // Calculate likelihood for survey age comp
   srv_age_like = -sum(elem_prod(nsamples_srv_age * (obs_ac_srv),log(eac_srv)));
+//  srv_age_like = -sum(elem_prod(nsamples_srv_age * (obs_ac_srv+0.00001),log(eac_srv+0.00001)));
 
 // Calculate likelihood for fishery age comp
   fish_age_like = -sum(elem_prod(nsamples_fish_age * (obs_ac_fish),log(eac_fish)));
+//  fish_age_like = -sum(elem_prod(nsamples_fish_age * (obs_ac_fish+0.00001),log(eac_fish+0.00001)));
 
 // Calculate total likelihood
   obj_fun  += M_pr;
@@ -412,3 +414,6 @@ REPORT_SECTION
 //  gradient_structure::set_GRADSTACK_BUFFER_SIZE(1000000);
 //  gradient_structure::set_CMPDIF_BUFFER_SIZE(10000000);
 //  arrmblsize=390000;
+
+RUNTIME_SECTION
+  maximum_function_evaluations 1000, 1000, 1000, 1000

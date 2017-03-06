@@ -151,7 +151,7 @@ PARAMETER_SECTION
   sdreport_vector       spawn_biom(1,nyrs);
 
 // Random effects (and associated sigma)
-  init_bounded_number           sigma_M(0.000001,0.1,ph_sig);
+  init_bounded_number           sigma_M(0.000001,0.2,ph_sig);
 
 // Natural mortality as fixed effects vector
 //  init_vector   M_devs(ms,nyrs,ph_Mdevs);
@@ -322,9 +322,11 @@ FUNCTION Evaluate_Objective_Function
 
 // Calculate likelihood for survey age comp
   srv_age_like = -sum(elem_prod(nsamples_srv_age * (obs_ac_srv),log(eac_srv)));
+//  srv_age_like = -sum(elem_prod(nsamples_srv_age * (obs_ac_srv+0.00001),log(eac_srv+0.00001)));
 
 // Calculate likelihood for fishery age comp
   fish_age_like = -sum(elem_prod(nsamples_fish_age * (obs_ac_fish),log(eac_fish)));
+//  fish_age_like = -sum(elem_prod(nsamples_fish_age * (obs_ac_fish+0.00001),log(eac_fish+0.00001)));
 
 // Calculate total likelihood
   obj_fun  += M_pr;
@@ -414,4 +416,4 @@ REPORT_SECTION
 //  arrmblsize=390000;
 
 RUNTIME_SECTION
-  maximum_function_evaluations 1000, 1000, 1000, 5000
+  maximum_function_evaluations 1000, 1000, 1000, 1000
