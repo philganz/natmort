@@ -49,7 +49,7 @@ system("admb -r tem")
 
 T_start <- Sys.time()
 	
-for (r in 6:10){
+for (r in 2:5){
 for (k in 1:1){
 for (c in 1:1){
 

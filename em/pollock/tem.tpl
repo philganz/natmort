@@ -160,7 +160,6 @@ PARAMETER_SECTION
 //  random_effects_vector M_devs(ms,nyrs,ph_Mdevs);
 
 // Likelihoods and penalty functions
-  number         temp;
   number         M_pr;
   number         srv_like;
   number         catch_like;
@@ -306,7 +305,6 @@ FUNCTION Get_Age_Comp
 FUNCTION Evaluate_Objective_Function 
 //===================================================================================================
 
-// Objective funtion only for calibration 
   obj_fun = 0;
 
 // Random effects prior ~N(0,1)
@@ -358,7 +356,6 @@ FUNCTION write_mcmc_results
    mcmc_results << "M_0,sigma_M,M_pr,obj_fun" << endl;
    header=0;}
    mcmc_results << M_0 << "," << sigma_M << "," << M_pr << "," << obj_fun << endl;
-
 
 //===================================================================================================
 REPORT_SECTION
