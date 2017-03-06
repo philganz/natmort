@@ -154,10 +154,10 @@ PARAMETER_SECTION
   init_bounded_number           sigma_M(0.000001,0.2,ph_sig);
 
 // Natural mortality as fixed effects vector
-//  init_vector   M_devs(ms,nyrs,ph_Mdevs);
+  init_vector   M_devs(ms,nyrs,ph_Mdevs);
 
 // Natural mortality deviations as random effects
-  random_effects_vector M_devs(ms,nyrs,ph_Mdevs);
+//  random_effects_vector M_devs(ms,nyrs,ph_Mdevs);
 
 // Likelihoods and penalty functions
   number         temp;
@@ -329,7 +329,7 @@ FUNCTION Evaluate_Objective_Function
 //  fish_age_like = -sum(elem_prod(nsamples_fish_age * (obs_ac_fish+0.00001),log(eac_fish+0.00001)));
 
 // Calculate total likelihood
-  obj_fun  += M_pr;
+//  obj_fun  += M_pr;
   obj_fun  += srv_age_like;
   obj_fun  += fish_age_like;
   obj_fun  += srv_like;
@@ -407,13 +407,4 @@ REPORT_SECTION
   report<<natage<<endl; 
   report<<"Z"<<endl;
   report<<Z<<endl; 
-
-//TOP_OF_MAIN_SECTION
-//  gradient_structure::set_MAX_NVAR_OFFSET(1000);
-//  gradient_structure::set_NUM_DEPENDENT_VARIABLES(1000);
-//  gradient_structure::set_GRADSTACK_BUFFER_SIZE(1000000);
-//  gradient_structure::set_CMPDIF_BUFFER_SIZE(10000000);
-//  arrmblsize=390000;
-
-RUNTIME_SECTION
-  maximum_function_evaluations 1000, 1000, 1000, 1000
+ 
