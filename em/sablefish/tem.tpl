@@ -157,10 +157,10 @@ PARAMETER_SECTION
   init_bounded_number           sigma_M(0.000001,0.2,ph_sig);
 
 // Natural mortality as fixed effects vector
-//  init_vector   M_devs(ms,nyrs,ph_Mdevs);
+  init_vector   M_devs(ms,nyrs,ph_Mdevs);
 
 // Natural mortality deviations as random effects
-  random_effects_vector M_devs(ms,nyrs,ph_Mdevs);
+//  random_effects_vector M_devs(ms,nyrs,ph_Mdevs);
 
 // Likelihoods and penalty functions
   number         M_pr;
@@ -311,7 +311,7 @@ FUNCTION Evaluate_Objective_Function
   obj_fun = 0;
 
 // Random effects prior ~N(0,1)
-  M_pr = 0.5*norm2(M_devs);
+//  M_pr = 0.5*norm2(M_devs);
 
 // Calculate likelihood for survey biomass
   srv_like =  1/(2*square(obs_srv_biom_CV))*sum(square(log(obs_srv_biom)-log(pred_srv)));
