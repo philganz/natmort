@@ -2,7 +2,14 @@
 #=================Define universal working directories
 #================================================================================================
 
-# set working directory to source file location #
+# set working directory to source file location
+## Rstudio:
+# setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+## sourced in R:
+# setwd(dirname(sys.frame(1)$ofile))
+## run from terminal
+this_dir <- function(directory)
+setwd(file.path(getwd(),directory))
 
 #================================================================================================
 #=================Set seed for random number generator and load required packages
@@ -19,7 +26,7 @@ library(R2admb)
 R <- 1000
 
 #Error in simulated data
-obs_srv_biom_CV   <- 0.05
+obs_srv_biom_CV   <- 0.15 # 0.05
 nsamples_srv_age  <- 160
 obs_fish_biom_CV  <- 0.01
 nsamples_fish_age <- 200
@@ -86,8 +93,8 @@ wt <- (wt_F+wt_M)/2
 #================================================================================================
 
 #Dependent values
-cov        <- array(NA,dim=c(nyears,m))
-M          <- array(NA,dim=c(nyears,m))
+cov        <- array(NA,dim=c(nyears,m,R))
+M          <- array(NA,dim=c(nyears,m,R))
 F_year     <- array(NA,dim=c(nyears,R))
 F          <- array(NA,dim=c(nyears,nages,R))
 Z          <- array(NA,dim=c(nyears,nages,R,m))
@@ -118,10 +125,10 @@ F_sigma <- sd(log_F_devs[,"log_F_devs"])
 #=================Simulate the covariate
 #================================================================================================
 for (r in 1:R){
-cov[,1] <- scale(1:nyears)[,1]
-cov[,2] <- scale(nyears:1)[,1]
-cov[,3] <- scale(sin(0.2*1:nyears))[,1]
-cov[,4] <- 0}
+cov[,1,r] <- scale(1:nyears)[,1]
+cov[,2,r] <- scale(nyears:1)[,1]
+cov[,3,r] <- scale(rnorm(nyears,M_0,M_0*0.2))  # scale(sin(0.2*1:nyears))[,1]
+cov[,4,r] <- 0}
 
 #================================================================================================
 #=================Get_Selectivity
@@ -133,7 +140,8 @@ fish_sel <- 1/(1+exp(-delta_fish*(ages-a50_fish)))
 #=================Get_Mortality_Rates
 #================================================================================================
 for (i in 1:nyears){
-M[i,] <- exp(log_M_0)+Beta*cov[i,]}
+for (r in 1:R){
+M[i,,r] <- exp(log_M_0)+Beta*cov[i,,r]}}
 
 for (r in 1:R){
 F_year[,r] <-  exp(log_avg_F+log_F_devs[as.character(years),"log_F_devs"])*exp(rnorm(nyears,0,F_sigma)-0.5*F_sigma^2)
@@ -145,7 +153,7 @@ for (j in 1:nages){
 for (r in 1:R){	
 for (k in 1:m){
 F[i,j,r] <- F_year[i,r]*fish_sel[j]
-Z[i,j,r,k] <- M[i,k]+F[i,j,r]
+Z[i,j,r,k] <- M[i,k,r]+F[i,j,r]
 S[i,j,r,k] <- exp(-(Z[i,j,r,k]))}}}}
 
 #================================================================================================
@@ -252,11 +260,11 @@ for (r in 1:R){
 for (k in 1:m){
 for (c in 1:length(cov_CV)){
 #Observe data without error
-obs_cov[,r,k,c] <- cov[,k]
+obs_cov[,r,k,c] <- cov[,k,r]
 }}}
       
 #Observe data with error
-# obs_cov[,r,k,c] <- cov[,k]+rnorm(nyears,0,cov_CV[c])}}}
+# obs_cov[,r,k,c] <- cov[,k,r]+rnorm(nyears,0,cov_CV[c])}}}
 
 #================================================================================================
 #===Save values

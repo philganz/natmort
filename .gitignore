@@ -1,8 +1,7 @@
 *
-**/documentation/**
 !.gitignore
 !*.tpl
 !*.ctl
 !*.R
 !*/
-
+documentation/
