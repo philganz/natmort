@@ -1,8 +1,8 @@
 #================================================================================================
 #===MCMC specifications
 #================================================================================================
-mcmc_N    <- 12000 #500000
-mcmc_save <- 100 #500
+mcmc_N    <- 500000
+mcmc_save <- 500
 burn_in   <- 100
 
 #================================================================================================
@@ -25,7 +25,7 @@ Iter_base         <- read.delim(paste(pathE,"/iteration_base.rep",sep=""),sep=""
 Results           <- array(NA,dim=c(R,length(Iter_base),m,length(cov_CV)))
 colnames(Results) <- names(Iter_base)
 STD               <- read.delim(paste(pathE,"/tem.std",sep=""),sep="")
-mcmc_results      <- array(NA,dim=c(mcmc_N/mcmc_save,3,R,m,length(cov_CV)))
+mcmc_results      <- array(NA,dim=c(mcmc_N/mcmc_save,4,R,m,length(cov_CV)))
 DIC               <- array(NA,dim=c(R,m,length(cov_CV)))
 
 #================================================================================================
@@ -50,8 +50,8 @@ system("admb -r tem")
 T_start <- Sys.time()
 	
 for (r in 1:1){
-for (k in 1:1){
-for (c in 1:1){
+for (k in 1:m){
+for (c in 1:length(cov_CV)){
 
 #================================================================================================
 #=================Send true parameter values to .pin file (for calibration only)
@@ -228,8 +228,8 @@ if(length(scan(paste(pathE,"/tem.std",sep=""),what=character(0)))>0){
   else{Results[r,1,k,c]<-0}}else{STD<-STDi;Results[r,1,k,c]<-0}
 
 # MCMC
-# shell(paste("tem -mcmc ", mcmc_N, " -mcsave ", mcmc_save, sep=""))
-# shell("tem -mceval")
+# system(paste("./tem -mcmc ", mcmc_N, " -mcsave ", mcmc_save, sep=""))
+# system("./tem -mceval")
 # mcmc_results[,,r,k,c] <- as.matrix(read.csv(paste(pathE,"/mcmc_results.csv",sep="")))
 
 # DIC
@@ -250,7 +250,9 @@ DIC[r,m,c] <- D_bar + pD
 T_end<-Sys.time()
 
 runtime <- T_end-T_start
-runtime
+print(runtime)
 
 # save results
-save(runtime,Results,mcmc_results,file=paste(pathR,"/Results_",R - sum(is.na(Results[,1,1,1])),".RData",sep=""))
+save(runtime,Results,file=paste(pathR,"/Results_",R - sum(is.na(Results[,1,1,1])),".RData",sep=""))
+if(sum(is.na(mcmc_results[1,1,,1,]))<R){
+save(runtime,mcmc_results,file=paste(pathR,"/MCMC_Results_",R - sum(is.na(mcmc_results[1,1,,1,])),".RData",sep=""))}

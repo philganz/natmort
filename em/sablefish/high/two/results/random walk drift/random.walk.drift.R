@@ -12,7 +12,7 @@ this_dir <- function(directory)
 setwd(file.path(getwd(),directory))
 
 pathR <- getwd()
-path   <- substr(pathR,1,nchar(pathR)-47)
+path   <- substr(pathR,1,nchar(pathR)-48)
 pathOM <- paste(path,"/om/sablefish",sep="")
 pathEM <- paste(path,"/em/sablefish",sep="")
 
@@ -91,7 +91,7 @@ paste(4),
 "# delta_fish:",
 paste(2),
 "# sigma_M:",
-paste(0.05),
+paste(0.001),
 "# M_devs:",
 paste(as.vector(rep(0,nyears)), collapse=" "))
 
