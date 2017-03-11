@@ -12,7 +12,7 @@ this_dir <- function(directory)
 setwd(file.path(getwd(),directory))
 
 pathR  <- getwd()
-path   <- substr(pathR,1,nchar(pathR)-40)
+path   <- substr(pathR,1,nchar(pathR)-39)
 pathOM <- paste(path,"/om/pollock",sep="")
 pathEM <- paste(path,"/em/pollock",sep="")
 

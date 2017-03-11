@@ -45,7 +45,7 @@ M_devs     <- array(NA,dim=c(nyears,m,R))
 
 # load existing results if any
 setwd(pathR)
-load("Results.RData")
+if(file.exists("Results.RData")){load("Results.RData")}
 
 #Compile estimation model
 setwd(pathE)
