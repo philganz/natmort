@@ -12,7 +12,7 @@ this_dir <- function(directory)
 setwd(file.path(getwd(),directory))
 
 pathR  <- getwd()
-path   <- substr(pathR,1,nchar(pathR)-46)
+path   <- substr(pathR,1,nchar(pathR)-40)
 pathOM <- paste(path,"/om/pollock",sep="")
 pathEM <- paste(path,"/em/pollock",sep="")
 
@@ -31,16 +31,16 @@ if(grepl("high/one",pathR)){load(paste(pathOM,"/high_1.RData",sep="")); pathE <-
 #================================================================================================
 #=================Write .ctl file
 #================================================================================================
-M_case  <- 3
-M_start <- 2
+M_case  <- 2
+M_start <- 1
 
 CTL <- c(
 paste(1, "# Log recruitment (ph_logR)", sep=" "),
 paste(1, "# Recruitment deviations phase (ph_Rdevs)", sep=" "),
 paste(1, "# Initial abundance deviations phase (ph_Idevs)", sep=" "),
-paste(-1, "# Mean mortality phase (ph_M_0)", sep=" "),
-paste(1, "# Initial mortality phase (ph_M_1)", sep=" "),
-paste(1, "# Drift term phase (ph_a)", sep=" "),
+paste(1, "# Mean mortality phase (ph_M_0)", sep=" "),
+paste(-1, "# Initial mortality phase (ph_M_1)", sep=" "),
+paste(-1, "# Drift term phase (ph_a)", sep=" "),
 paste(-1, "# Beta phase (ph_B)", sep=" "),
 paste(1, "# Avg F phase (ph_avgF)", sep=" "),
 paste(1, "# F deviations phase (ph_Fdevs)", sep=" "),
@@ -69,6 +69,7 @@ paste(as.vector(rep(0,nages-1)), collapse=" "),
 "# log_avg_F:",
 paste(-2),
 "# F_devs:",
+# paste(as.vector(F_devs_1), collapse=" "),
 paste(as.vector(rep(0,nyears)), collapse=" "),
 "# log_M_0:",
 paste(-1),
@@ -91,7 +92,7 @@ paste(5),
 "# delta_fish:",
 paste(1),
 "# sigma_M:",
-paste(0.0001),
+paste(0.01),
 "# M_devs:",
 paste(as.vector(rep(0,nyears)), collapse=" "))
 

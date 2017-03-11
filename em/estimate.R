@@ -42,14 +42,18 @@ M_devs     <- array(NA,dim=c(nyears,m,R))
 #================================================================================================
 #===Loop through M scenarios, covariate error, replicates
 #================================================================================================
-setwd(pathE)
+
+# load existing results if any
+setwd(pathR)
+load("Results.RData")
 
 #Compile estimation model
+setwd(pathE)
 system("admb -r tem")
 
 T_start <- Sys.time()
 	
-for (r in 1:1){
+for (r in 1:25){
 for (k in 1:m){
 for (c in 1:length(cov_CV)){
 
@@ -253,6 +257,6 @@ runtime <- T_end-T_start
 print(runtime)
 
 # save results
-save(runtime,Results,file=paste(pathR,"/Results_",R - sum(is.na(Results[,1,1,1])),".RData",sep=""))
+save(runtime,Results,file=paste(pathR,"/Results.RData",sep=""))
 if(sum(is.na(mcmc_results[1,1,,1,]))<R){
-save(runtime,mcmc_results,file=paste(pathR,"/MCMC_Results_",R - sum(is.na(mcmc_results[1,1,,1,])),".RData",sep=""))}
+save(runtime,mcmc_results,file=paste(pathR,"/MCMC_Results.RData",sep=""))}
