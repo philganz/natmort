@@ -37,7 +37,7 @@ init_devs  <- array(NA,dim=c(nages-1,R))
 log_avg_F  <- array(NA,dim=c(R))
 F_devs     <- array(NA,dim=c(nyears,R))
 alpha      <- array(NA, dim=m)
-M_devs     <- array(NA,dim=c(nyears,m))
+M_devs     <- array(NA,dim=c(nyears,m,R))
 
 #================================================================================================
 #===Loop through M scenarios, covariate error, replicates
@@ -61,9 +61,9 @@ rec_devs[,r]  <- log(N[,1,r,k])-logR[r]
 init_devs[,r] <- log(N[1,2:nages,r,k])
 log_avg_F[r]  <- mean(log(F_year[,r]))
 F_devs[,r]    <- log(F_year[,r]) - log_avg_F[r]
-for(i in 2:nyears){alpha[k]      <- mean(M[i,k] - M[i-1,k])}
-if(M_case<=2){sigma_M <- exp(log_sigma_M); M_devs[,k] <- (M[,k] - M_0)/sigma_M
-} else{sigma_M <- 0; M_devs[,k] <- 0}
+for(i in 2:nyears){alpha[k]      <- mean(M[i,k,r] - M[i-1,k,r])}
+if(M_case<=2){sigma_M <- exp(log_sigma_M); M_devs[,k,r] <- (M[,k,r] - M_0)/sigma_M
+} else{sigma_M <- 0; M_devs[,k,r] <- 0}
 
 PIN<-c(
 "# logR:",
@@ -100,7 +100,7 @@ as.character(delta_fish),
 "# sigma_M:",
 as.character(sigma_M),
 "# M_devs:",
-paste(as.vector(M_devs[,k]), collapse=" "))
+paste(as.vector(M_devs[,k,r]), collapse=" "))
 
 # write.table(PIN,file=paste(pathE,"/tem.pin",sep=""),quote=FALSE,row.names=FALSE,col.names=FALSE)
 

@@ -93,10 +93,10 @@ PARAMETER_SECTION
 // Recruitment/initial abundance parameters
   init_bounded_number       logR(5,15,ph_logR);
   init_bounded_vector   rec_devs(1,nyrs,-15,15,ph_Rdevs);
-  init_bounded_vector       init_devs(2,nages,5,20,ph_Idevs);
+  init_bounded_vector       init_devs(2,nages,-5,20,ph_Idevs);
 
 // Fishing mortality
-  init_number               log_avg_F(ph_avgF);
+  init_bounded_number               log_avg_F(-5,0,ph_avgF);
   init_bounded_vector   F_devs(1,nyrs,-15,15,ph_Fdevs);
 
 // Natural mortality
@@ -151,7 +151,7 @@ PARAMETER_SECTION
   sdreport_vector       spawn_biom(1,nyrs);
 
 // Random effects (and associated sigma)
-  init_number           sigma_M(ph_sig);
+  init_bounded_number           sigma_M(0.000001,0.2,ph_sig);
 
 // Natural mortality as fixed effects vector
 //  init_vector   M_devs(ms,nyrs,ph_Mdevs);
@@ -160,7 +160,6 @@ PARAMETER_SECTION
   random_effects_vector M_devs(ms,nyrs,ph_Mdevs);
 
 // Likelihoods and penalty functions
-  number         temp;
   number         M_pr;
   number         srv_like;
   number         catch_like;
@@ -306,7 +305,6 @@ FUNCTION Get_Age_Comp
 FUNCTION Evaluate_Objective_Function 
 //===================================================================================================
 
-// Objective funtion only for calibration 
   obj_fun = 0;
 
 // Random effects prior ~N(0,1)
@@ -359,7 +357,6 @@ FUNCTION write_mcmc_results
    header=0;}
    mcmc_results << M_0 << "," << sigma_M << "," << M_pr << "," << obj_fun << endl;
 
-
 //===================================================================================================
 REPORT_SECTION
 //===================================================================================================
@@ -407,13 +404,4 @@ REPORT_SECTION
   report<<natage<<endl; 
   report<<"Z"<<endl;
   report<<Z<<endl; 
-
-//TOP_OF_MAIN_SECTION
-//  gradient_structure::set_MAX_NVAR_OFFSET(1000);
-//  gradient_structure::set_NUM_DEPENDENT_VARIABLES(1000);
-//  gradient_structure::set_GRADSTACK_BUFFER_SIZE(1000000);
-//  gradient_structure::set_CMPDIF_BUFFER_SIZE(10000000);
-//  arrmblsize=390000;
-
-RUNTIME_SECTION
-  maximum_function_evaluations 1000, 1000, 1000, 1000
+ 

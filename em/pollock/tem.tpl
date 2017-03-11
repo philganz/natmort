@@ -93,7 +93,7 @@ PARAMETER_SECTION
 // Recruitment/initial abundance parameters
   init_bounded_number       logR(5,15,ph_logR);
   init_bounded_dev_vector   rec_devs(1,nyrs,-15,15,ph_Rdevs);
-  init_bounded_vector       init_devs(2,nages,5,20,ph_Idevs);
+  init_bounded_vector       init_devs(2,nages,-5,20,ph_Idevs);
 
 // Fishing mortality
   init_bounded_number               log_avg_F(-5,0,ph_avgF);
@@ -154,10 +154,10 @@ PARAMETER_SECTION
   init_bounded_number           sigma_M(0.000001,0.2,ph_sig);
 
 // Natural mortality as fixed effects vector
-  init_vector   M_devs(ms,nyrs,ph_Mdevs);
+//  init_vector   M_devs(ms,nyrs,ph_Mdevs);
 
 // Natural mortality deviations as random effects
-//  random_effects_vector M_devs(ms,nyrs,ph_Mdevs);
+  random_effects_vector M_devs(ms,nyrs,ph_Mdevs);
 
 // Likelihoods and penalty functions
   number         M_pr;
@@ -327,7 +327,7 @@ FUNCTION Evaluate_Objective_Function
 //  fish_age_like = -sum(elem_prod(nsamples_fish_age * (obs_ac_fish+0.00001),log(eac_fish+0.00001)));
 
 // Calculate total likelihood
-//  obj_fun  += M_pr;
+  obj_fun  += M_pr;
   obj_fun  += srv_age_like;
   obj_fun  += fish_age_like;
   obj_fun  += srv_like;
