@@ -4,15 +4,15 @@
 
 # set working directory to source file location
 ## Rstudio:
-# setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 ## sourced in R:
 # setwd(dirname(sys.frame(1)$ofile))
 ## run from terminal
-this_dir <- function(directory)
-setwd(file.path(getwd(),directory))
+# this_dir <- function(directory)
+# setwd(file.path(getwd(),directory))
 
-pathR <- getwd()
-path   <- substr(pathR,1,nchar(pathR)-42)
+pathR  <- getwd()
+path   <- substr(pathR,1,nchar(pathR)-41)
 pathOM <- paste(path,"/om/sablefish",sep="")
 pathEM <- paste(path,"/em/sablefish",sep="")
 
@@ -31,15 +31,15 @@ if(grepl("high/one",pathR)){load(paste(pathOM,"/high_1.RData",sep="")); pathE <-
 #================================================================================================
 #=================Write .ctl file
 #================================================================================================
-M_case  <- 3
-M_start <- 2
+M_case  <- 2
+M_start <- 1
 
 CTL <- c(
 paste(1, "# Log recruitment (ph_logR)", sep=" "),
 paste(1, "# Recruitment deviations phase (ph_Rdevs)", sep=" "),
 paste(1, "# Initial abundance deviations phase (ph_Idevs)", sep=" "),
-paste(-1, "# Mean mortality phase (ph_M_0)", sep=" "),
-paste(1, "# Initial mortality phase (ph_M_1)", sep=" "),
+paste(1, "# Mean mortality phase (ph_M_0)", sep=" "),
+paste(-1, "# Initial mortality phase (ph_M_1)", sep=" "),
 paste(-1, "# Drift term phase (ph_a)", sep=" "),
 paste(-1, "# Beta phase (ph_B)", sep=" "),
 paste(1, "# Avg F phase (ph_avgF)", sep=" "),
@@ -91,7 +91,7 @@ paste(4),
 "# delta_fish:",
 paste(2),
 "# sigma_M:",
-paste(0.0001),
+paste(0.01),
 "# M_devs:",
 paste(as.vector(rep(0,nyears)), collapse=" "))
 

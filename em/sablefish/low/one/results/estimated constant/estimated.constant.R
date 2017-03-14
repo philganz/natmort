@@ -4,15 +4,15 @@
 
 # set working directory to source file location
 ## Rstudio:
-# setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 ## sourced in R:
 # setwd(dirname(sys.frame(1)$ofile))
 ## run from terminal
-this_dir <- function(directory)
-setwd(file.path(getwd(),directory))
+# this_dir <- function(directory)
+# setwd(file.path(getwd(),directory))
 
 pathR <- getwd()
-path   <- substr(pathR,1,nchar(pathR)-46)
+path   <- substr(pathR,1,nchar(pathR)-48)
 pathOM <- paste(path,"/om/sablefish",sep="")
 pathEM <- paste(path,"/em/sablefish",sep="")
 
@@ -31,15 +31,15 @@ if(grepl("high/one",pathR)){load(paste(pathOM,"/high_1.RData",sep="")); pathE <-
 #================================================================================================
 #=================Write .ctl file
 #================================================================================================
-M_case  <- 3
-M_start <- 2
+M_case  <- 1
+M_start <- 1
 
 CTL <- c(
 paste(1, "# Log recruitment (ph_logR)", sep=" "),
 paste(1, "# Recruitment deviations phase (ph_Rdevs)", sep=" "),
 paste(1, "# Initial abundance deviations phase (ph_Idevs)", sep=" "),
-paste(-1, "# Mean mortality phase (ph_M_0)", sep=" "),
-paste(1, "# Initial mortality phase (ph_M_1)", sep=" "),
+paste(1, "# Mean mortality phase (ph_M_0)", sep=" "),
+paste(-1, "# Initial mortality phase (ph_M_1)", sep=" "),
 paste(-1, "# Drift term phase (ph_a)", sep=" "),
 paste(-1, "# Beta phase (ph_B)", sep=" "),
 paste(1, "# Avg F phase (ph_avgF)", sep=" "),
@@ -47,9 +47,9 @@ paste(1, "# F deviations phase (ph_Fdevs)", sep=" "),
 paste(1, "# Catchability phase (ph_q)", sep=" "),
 paste(1, "# Survey Selectivity phase (ph_Ssel)", sep=" "),
 paste(1, "# Fishery Selectivity phase (ph_Fsel)",sep=" "),
-paste(1, "# Correlation term phase (ph_phi)", sep=" "),
-paste(2, "# Mortality deviations phase (ph_Mdevs)", sep=" "),
-paste(2, "# Random effects sigma phase (ph_sig)", sep=" "),
+paste(-1, "# Correlation term phase (ph_phi)", sep=" "),
+paste(-2, "# Mortality deviations phase (ph_Mdevs)", sep=" "),
+paste(-2, "# Random effects sigma phase (ph_sig)", sep=" "),
 paste(M_case, "# Natural mortality estimation case (M_case)", sep=" "),
 paste(M_start, "# Start year for M_devs (M_start)", sep=" "))
 
@@ -74,8 +74,8 @@ paste(as.vector(rep(0,nyears)), collapse=" "),
 paste(-2),
 "# log_M_1:",
 paste(-2),
-"# phi:",
-paste(1),
+"# log_phi:",
+paste(-5000),
 "# alpha:",
 paste(0),
 "# Beta:",
@@ -90,8 +90,8 @@ paste(2),
 paste(4),
 "# delta_fish:",
 paste(2),
-"# sigma_M:",
-paste(0.05),
+"# log_sigma_M:",
+paste(-4),
 "# M_devs:",
 paste(as.vector(rep(0,nyears)), collapse=" "))
 

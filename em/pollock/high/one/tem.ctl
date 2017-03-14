@@ -1,7 +1,7 @@
 1 # Log recruitment (ph_logR)
 1 # Recruitment deviations phase (ph_Rdevs)
 1 # Initial abundance deviations phase (ph_Idevs)
--1 # Mean mortality phase (ph_M_0)
+1 # Mean mortality phase (ph_M_0)
 -1 # Initial mortality phase (ph_M_1)
 -1 # Drift term phase (ph_a)
 -1 # Beta phase (ph_B)

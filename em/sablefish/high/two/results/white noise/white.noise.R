@@ -4,12 +4,12 @@
 
 # set working directory to source file location
 ## Rstudio:
-# setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 ## sourced in R:
 # setwd(dirname(sys.frame(1)$ofile))
 ## run from terminal
-this_dir <- function(directory)
-setwd(file.path(getwd(),directory))
+# this_dir <- function(directory)
+# setwd(file.path(getwd(),directory))
 
 pathR  <- getwd()
 path   <- substr(pathR,1,nchar(pathR)-42)
