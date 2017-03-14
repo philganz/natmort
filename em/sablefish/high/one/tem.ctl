@@ -4,7 +4,7 @@
 1 # Mean mortality phase (ph_M_0)
 -1 # Initial mortality phase (ph_M_1)
 -1 # Drift term phase (ph_a)
-1 # Beta phase (ph_B)
+-1 # Beta phase (ph_B)
 1 # Avg F phase (ph_avgF)
 1 # F deviations phase (ph_Fdevs)
 1 # Catchability phase (ph_q)
