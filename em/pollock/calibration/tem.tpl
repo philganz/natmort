@@ -92,12 +92,12 @@ PARAMETER_SECTION
 
 // Recruitment/initial abundance parameters
   init_bounded_number       logR(5,15,ph_logR);
-  init_bounded_vector   rec_devs(1,nyrs,-15,15,ph_Rdevs);
+  init_bounded_dev_vector   rec_devs(1,nyrs,-15,15,ph_Rdevs);
   init_bounded_vector       init_devs(2,nages,-5,20,ph_Idevs);
 
 // Fishing mortality
   init_bounded_number               log_avg_F(-5,0,ph_avgF);
-  init_bounded_vector   F_devs(1,nyrs,-15,15,ph_Fdevs);
+  init_bounded_dev_vector   F_devs(1,nyrs,-15,15,ph_Fdevs);
 
 // Natural mortality
   init_bounded_number             log_M_0(-5,0,ph_M_0);
