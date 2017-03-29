@@ -157,10 +157,10 @@ PARAMETER_SECTION
   init_bounded_number           sigma_M(0.000001,0.2,ph_sig);
 
 // Natural mortality as fixed effects vector
-//  init_vector   M_devs(ms,nyrs,ph_Mdevs);
+  init_vector   M_devs(ms,nyrs,ph_Mdevs);
 
 // Natural mortality deviations as random effects
-  random_effects_vector M_devs(ms,nyrs,ph_Mdevs);
+//  random_effects_vector M_devs(ms,nyrs,ph_Mdevs);
 
 // Likelihoods and penalty functions
   number         M_pr;
