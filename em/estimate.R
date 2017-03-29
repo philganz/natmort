@@ -53,8 +53,8 @@ system("admb -r tem")
 
 T_start <- Sys.time()
 	
-for (r in 3:14){
-for (k in 1:m){
+for (r in 1:1){
+for (k in 1:1){
 for (c in 1:length(cov_CV)){
 
 #================================================================================================
