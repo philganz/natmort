@@ -327,7 +327,7 @@ FUNCTION Evaluate_Objective_Function
 //  fish_age_like = -sum(elem_prod(nsamples_fish_age * (obs_ac_fish+0.00001),log(eac_fish+0.00001)));
 
 // Calculate total likelihood
-  obj_fun  += M_pr;
+//  obj_fun  += M_pr;
   obj_fun  += srv_age_like;
   obj_fun  += fish_age_like;
   obj_fun  += srv_like;

@@ -10,7 +10,7 @@
 1 # Catchability phase (ph_q)
 1 # Survey Selectivity phase (ph_Ssel)
 1 # Fishery Selectivity phase (ph_Fsel)
--1 # Correlation term phase (ph_phi)
+1 # Correlation term phase (ph_phi)
 2 # Mortality deviations phase (ph_Mdevs)
 -2 # Random effects sigma phase (ph_sig)
 3 # Natural mortality estimation case (M_case)
