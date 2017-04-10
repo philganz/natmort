@@ -319,12 +319,12 @@ FUNCTION Evaluate_Objective_Function
 //  catch_like = 1/(2*square(obs_fish_biom_CV))*sum(square(log(obs_fish_biom+0.00001)-log(pred_catch+0.00001)));
 
 // Calculate likelihood for survey age comp
-  srv_age_like = -sum(elem_prod(nsamples_srv_age * (obs_ac_srv),log(eac_srv)));
-//  srv_age_like = -sum(elem_prod(nsamples_srv_age * (obs_ac_srv+0.00001),log(eac_srv+0.00001)));
+//  srv_age_like = -sum(elem_prod(nsamples_srv_age * (obs_ac_srv),log(eac_srv)));
+  srv_age_like = -sum(elem_prod(nsamples_srv_age * (obs_ac_srv+0.00001),log(eac_srv+0.00001)));
 
 // Calculate likelihood for fishery age comp
-  fish_age_like = -sum(elem_prod(nsamples_fish_age * (obs_ac_fish),log(eac_fish)));
-//  fish_age_like = -sum(elem_prod(nsamples_fish_age * (obs_ac_fish+0.00001),log(eac_fish+0.00001)));
+//  fish_age_like = -sum(elem_prod(nsamples_fish_age * (obs_ac_fish),log(eac_fish)));
+  fish_age_like = -sum(elem_prod(nsamples_fish_age * (obs_ac_fish+0.00001),log(eac_fish+0.00001)));
 
 // Calculate total likelihood
   obj_fun  += M_pr;

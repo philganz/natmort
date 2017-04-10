@@ -91,7 +91,7 @@ paste(5),
 "# delta_fish:",
 paste(1),
 "# log_sigma_M:",
-paste(-6),
+paste(0),
 "# M_devs:",
 paste(as.vector(rep(0,nyears)), collapse=" "))
 

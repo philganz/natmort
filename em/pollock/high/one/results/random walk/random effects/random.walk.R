@@ -12,7 +12,7 @@ setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 # setwd(file.path(getwd(),directory))
 
 pathR  <- getwd()
-path   <- substr(pathR,1,nchar(pathR)-40)
+path   <- substr(pathR,1,nchar(pathR)-55)
 pathOM <- paste(path,"/om/pollock",sep="")
 pathEM <- paste(path,"/em/pollock",sep="")
 

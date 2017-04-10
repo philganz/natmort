@@ -1,9 +1,9 @@
 #================================================================================================
 #===MCMC specifications
 #================================================================================================
-mcmc_N    <- 500000
-mcmc_save <- 500
-burn_in   <- 100
+mcmc_N    <- 5000 #500000
+mcmc_save <- 5   #500
+burn_in   <- 10 #100
 
 #================================================================================================
 #===For estimation methods that don't use the covariate
@@ -44,8 +44,8 @@ M_devs     <- array(NA,dim=c(nyears,m,R))
 #================================================================================================
 
 # load existing results if any
-setwd(pathR)
-if(file.exists("Results.RData")){load("Results.RData")}
+# setwd(pathR)
+# if(file.exists("Results.RData")){load("Results.RData")}
 
 #Compile estimation model
 setwd(pathE)
@@ -53,7 +53,7 @@ system("admb -r tem")
 
 T_start <- Sys.time()
 	
-for (r in 1:25){
+for (r in 1:50){
 for (k in 1:m){
 for (c in 1:length(cov_CV)){
 
@@ -129,7 +129,7 @@ for(i in 1:nyears){
 oac_fish_sim[i]<-paste(as.vector(obs_ac_fish[i,,r,k]),collapse=" ")}
 
 #M covariate data
-cov_sim<-paste(as.vector(obs_cov[,r,k,c]),collapse=" ")
+cov_sim<-paste(as.vector(obs_cov[,r,k,c]+1),collapse=" ")
 
 DATs<-c(
 "#==========================================================================================================================",
@@ -214,8 +214,14 @@ oac_fish_sim,
 
 write.table(DATs,file=paste(pathE,"/tem.dat",sep=""),quote=FALSE,row.names=FALSE,col.names=FALSE)
 
-#Run Model
+# Run Model
 system("./tem")
+
+# Run Model with MCMC
+# system(paste("./tem -mcmc ", mcmc_N, " -mcsave ", mcmc_save, sep=""))
+# system("./tem -mceval")
+# mcmc_results[,,r,k,c]  <- as.matrix(read.csv(paste(pathE,"/mcmc_results.csv",sep="")))
+# colnames(mcmc_results) <- colnames(read.csv(paste(pathE,"/mcmc_results.csv",sep="")))
 
 #Record iteration results
 Iter_base <- read.delim(paste(pathE,"/iteration_base.rep",sep=""),sep="")
@@ -231,16 +237,11 @@ if(length(scan(paste(pathE,"/tem.std",sep=""),what=character(0)))>0){
     STD<-STDi}
   else{Results[r,1,k,c]<-0}}else{STD<-STDi;Results[r,1,k,c]<-0}
 
-# MCMC
-# system(paste("./tem -mcmc ", mcmc_N, " -mcsave ", mcmc_save, sep=""))
-# system("./tem -mceval")
-# mcmc_results[,,r,k,c] <- as.matrix(read.csv(paste(pathE,"/mcmc_results.csv",sep="")))
-
 # DIC
-D_bar <- mean(2 * mcmc_results[-c(1:burn_in),,r,k,c])
-D     <- 2 * Results[r,"obj_fun",k,c]
-pD    <- D_bar - D
-DIC[r,m,c] <- D_bar + pD
+# D_bar <- mean(2 * mcmc_results[-c(1:burn_in),"obj_fun",r,k,c])
+# D     <- 2 * Results[r,"obj_fun",k,c]
+# pD    <- D_bar - D
+# DIC[r,m,c] <- D_bar + pD
 
 #End covariate error loop
 }
@@ -258,5 +259,5 @@ print(runtime)
 
 # save results
 save(runtime,Results,file=paste(pathR,"/Results.RData",sep=""))
-if(sum(is.na(mcmc_results[1,1,,1,]))<R){
-save(runtime,mcmc_results,file=paste(pathR,"/MCMC_Results.RData",sep=""))}
+if(sum(is.na(mcmc_results[1,1,,1,1]))<R){
+save(runtime,mcmc_results,DIC,file=paste(pathR,"/MCMC_Results.RData",sep=""))}
