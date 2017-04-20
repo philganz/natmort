@@ -4,12 +4,12 @@
 
 # set working directory to source file location
 ## Rstudio:
-# setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 ## sourced in R:
 # setwd(dirname(sys.frame(1)$ofile))
 ## run from terminal
-this_dir <- function(directory)
-setwd(file.path(getwd(),directory))
+# this_dir <- function(directory)
+# setwd(file.path(getwd(),directory))
 
 #================================================================================================
 #=================Set seed for random number generator and load required packages
@@ -128,7 +128,7 @@ F_sigma <- sd(log_F_devs[,"log_F_devs"])
 for (r in 1:R){
 cov[,1,r] <- scale(1:nyears)[,1]
 cov[,2,r] <- scale(nyears:1)[,1]
-cov[,3,r] <- scale(rnorm(nyears,M_0,M_0*0.2))  # scale(sin(0.2*1:nyears))[,1]
+cov[,3,r] <- scale(rnorm(nyears,0,1))  # scale(sin(0.2*1:nyears))[,1]
 cov[,4,r] <- 0}
 
 #================================================================================================
@@ -164,8 +164,8 @@ S[i,j,r,k] <- exp(-(Z[i,j,r,k]))}}}}
 for (r in 1:R){
 for (k in 1:m){
 for (j in 2:(nages-1)){
-N[1,j,r,k] <- exp(rnorm(1, mean(log_mean_rec+log_rec_dev[as.character(1979:2013),"log_rec_dev"]), rec_sigma)-0.5*rec_sigma^2)*exp(-(j-1)*0.1)}
-N[1,nages,r,k] <- exp(mean(log_mean_rec+log_rec_dev[as.character(1979:2013),"log_rec_dev"]))*exp(-(nages-1)*0.1)*1/(1-exp(-0.1))}
+N[1,j,r,k] <- exp(rnorm(1, mean(log_mean_rec+log_rec_dev[as.character(1979:2013),"log_rec_dev"]), rec_sigma)-0.5*rec_sigma^2)*exp(-(j-1)*M_0)}
+N[1,nages,r,k] <- exp(mean(log_mean_rec+log_rec_dev[as.character(1979:2013),"log_rec_dev"]))*exp(-(nages-1)*M_0)*1/(1-exp(-M_0))}
 
 #Recruitment
 N[,1,r,] <- exp(rnorm(nyears, mean(log_mean_rec+log_rec_dev[as.character(1979:2013),"log_rec_dev"]), rec_sigma)-0.5*rec_sigma^2)}

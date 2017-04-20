@@ -1,9 +1,9 @@
 #================================================================================================
 #===MCMC specifications
 #================================================================================================
-mcmc_N    <- 5000 #500000
-mcmc_save <- 5   #500
-burn_in   <- 10 #100
+mcmc_N    <- 10000 #500000
+mcmc_save <- 10   #500
+burn_in   <- 300 #100
 
 #================================================================================================
 #===For estimation methods that don't use the covariate
@@ -46,6 +46,7 @@ M_devs     <- array(NA,dim=c(nyears,m,R))
 # load existing results if any
 # setwd(pathR)
 # if(file.exists("Results.RData")){load("Results.RData")}
+# if(file.exists("MCMC_Results.RData")){load("MCMC_Results.RData")}
 
 #Compile estimation model
 setwd(pathE)
@@ -53,7 +54,7 @@ system("admb -r tem")
 
 T_start <- Sys.time()
 	
-for (r in 1:50){
+for (r in 1:100){
 for (k in 1:m){
 for (c in 1:length(cov_CV)){
 
@@ -241,7 +242,8 @@ if(length(scan(paste(pathE,"/tem.std",sep=""),what=character(0)))>0){
 # D_bar <- mean(2 * mcmc_results[-c(1:burn_in),"obj_fun",r,k,c])
 # D     <- 2 * Results[r,"obj_fun",k,c]
 # pD    <- D_bar - D
-# DIC[r,m,c] <- D_bar + pD
+# if(Results[r,1,k,c]==1){DIC[r,k,c] <- D_bar + pD
+# }else{DIC[r,k,c] <- NA}
 
 #End covariate error loop
 }
@@ -259,5 +261,5 @@ print(runtime)
 
 # save results
 save(runtime,Results,file=paste(pathR,"/Results.RData",sep=""))
-if(sum(is.na(mcmc_results[1,1,,1,1]))<R){
-save(runtime,mcmc_results,DIC,file=paste(pathR,"/MCMC_Results.RData",sep=""))}
+# if(sum(is.na(mcmc_results[1,1,,1,1]))<R){
+# save(runtime,mcmc_N,mcmc_save,burn_in,mcmc_results,DIC,file=paste(pathR,"/MCMC_Results.RData",sep=""))}
