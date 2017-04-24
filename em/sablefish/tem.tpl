@@ -108,7 +108,7 @@ PARAMETER_SECTION
   init_number             log_M_1(ph_M_1);        // For random walk scenarios (log_M_1 = log(M(1))) 
   init_bounded_number     phi(0,2,ph_phi);
   init_number             alpha(ph_a);
-  init_number             Beta(ph_B);
+  init_bounded_number             Beta(-1,1,ph_B);
   
 // Survey catchability
   init_number         log_q_srv(ph_q);
